@@ -1,0 +1,29 @@
+{
+  "name": "coach"
+, "description": "coach which orchestrates and talks to the various boxers - this is a proxy between the web API and boxers"
+, "author": "Action.IO"
+, "version": "0.0.1"
+, "private": true
+, "main": "./boot"
+, "dependencies": {
+    "coffee-script"  : "1.3.x"
+  , "underscore"     : "1.3.x"
+  , "express"        : "3.0.x"
+  , "hiredis"        : "0.1.x"
+  , "redis"          : "0.7.x"
+  }
+, "devDependencies": {
+    "mocha"        : "1.3.x"
+  , "sinon"        : "1.4.x"
+  , "chai"         : "1.2.x"
+  , "sinon-chai"   : "2.1.x"
+  }
+, "engines": {
+    "node"         : "0.8.x"
+  , "npm"          : "1.1.x"
+  }
+, "scripts": {
+    "test": "make test"
+  }
+}
+

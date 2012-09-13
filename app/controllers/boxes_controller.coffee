@@ -43,7 +43,6 @@ module.exports = class BoxesController extends ApplicationController
       if !err
         self.response.send 202, JSON.stringify
                                           "status" : "OK"
-                                          "text" : res
       else
         self.response.send 500, JSON.stringify
                                           "status" : "ERROR"

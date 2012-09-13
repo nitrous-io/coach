@@ -37,7 +37,6 @@ describe 'BoxesController', ->
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
-              expect(resultObject.text).to.eql 1
 
 
   describe 'PUT start', ->
@@ -69,7 +68,6 @@ describe 'BoxesController', ->
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
-              expect(resultObject.text).to.eql 1
 
   describe 'PUT stop', ->
     beforeEach (done) ->
@@ -100,7 +98,6 @@ describe 'BoxesController', ->
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
-              expect(resultObject.text).to.eql 1
 
   describe 'PUT destroy', ->
     beforeEach (done) ->
@@ -131,5 +128,4 @@ describe 'BoxesController', ->
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
-              expect(resultObject.text).to.eql 1
 

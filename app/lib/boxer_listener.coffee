@@ -1,5 +1,6 @@
 MessageParser = require './message_parser'
 initRedisClientWith = require('./utils').initRedisClientWith
+_ = require 'underscore'
 
 module.exports = class BoxerListener
   constructor:(@settings) ->
@@ -15,4 +16,8 @@ module.exports = class BoxerListener
           self._handle(parsedMessage)
 
   _handle: (message) ->
+
+
+  chooseBoxer: (runtime, memory, diskSpace) ->
+    null
 

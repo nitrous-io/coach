@@ -1,11 +1,16 @@
 publisher = require '../lib/redis_client'
 protocol = require '../protocol'
 settings = require '../../config/settings'
-
 ApplicationController = require './application_controller'
 
 module.exports = class BoxesController extends ApplicationController
   create: ->
+    boxerListener = require('../../app').boxerListener
+
+    boxer = boxerListener.chooseBoxer @params['box'].runtime,
+                                      @params['box'].memory,
+                                      @params['box'].disk_space
+
     attributes =
                 name: @params['box'].name
                 boxId: @params['box'].id
@@ -13,9 +18,13 @@ module.exports = class BoxesController extends ApplicationController
                 memory: @params['box'].memory
                 diskSpace: @params['box'].disk_space
                 snapshotURL: @params['box'].snapshot_url
-                # TODO: add the boxer ID we want to send to
 
-    this._renderResult(protocol.CreateMessage, attributes)
+    if boxer?
+      attributes['id'] = boxer.id
+      this._renderResult(protocol.CreateMessage, attributes)
+    else
+      @response.send 404, JSON.stringify("status":"MISSING")
+
 
   start: ->
     attributes =

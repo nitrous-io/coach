@@ -6,11 +6,9 @@ describe 'BoxesController', ->
   boxer = settings = null
 
   describe 'POST create', ->
-    beforeEach (done) ->
+    beforeEach ->
       settings = require '../../config/settings'
       boxer = initRedisClientWith(settings.redisMQ)
-      boxer.subscribe settings.boxerChannel, (err, result) ->
-        done() if !err
 
     afterEach ->
       boxer.unsubscribe()

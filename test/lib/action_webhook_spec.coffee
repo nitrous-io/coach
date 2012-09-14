@@ -16,10 +16,11 @@ describe 'ActionWebhook', ->
       app = express()
       app.configure ->
         app.use express.bodyParser()
+        app.use express.basicAuth  (user, pass) ->
+          user == 'aio' && pass == 'foobar'
 
       app.put '/boxes/1/webhook', (req, res) ->
         payload = JSON.parse(req.body.payload)
-        payload['X-SECRET'] = req.get('X-SECRET')
         res.send(payload)
 
       app.listen(3306)
@@ -29,7 +30,6 @@ describe 'ActionWebhook', ->
 
     it 'should send a request to the webhook URL', (done) ->
       ActionWebhook.sendNotification message, (err, res) ->
-        expect(res.body['X-SECRET']).to.eql 'foobar'
         expect(res.body['id']).to.eql 'boxer-id'
         expect(res.body['boxId']).to.eql 1
         expect(res.body['hostName']).to.eql 'mclovin'

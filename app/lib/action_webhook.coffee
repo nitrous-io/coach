@@ -5,6 +5,6 @@ module.exports = class ActionWebhook
   @sendNotification: (message, cb) ->
     request.put("#{settings.webhookHost}/boxes/#{message.boxId}/webhook")
            .send(payload: message.encode())
-           .set('X-SECRET': settings.webhookSecret)
+           .auth(settings.webhookUsername, settings.webhookPassword)
            .end (err, res) ->
              cb(err, res)

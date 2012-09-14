@@ -7,12 +7,15 @@ settings =
     coachChannel: 'aio-coach-channel'
   development:
     redisMQ:
-      host: '0.0.0.0'
-      port: 6379
+      host: process.env.REDIS_HOST
+      port: process.env.REDIS_PORT
       password: null
       database: 0
-    webhookHost: 'http://127.0.0.1'
-    webhookSecret: 'foobar'
+    webhookHost: process.env.WEBHOOK_HOST
+    webhookUsername: process.env.WEBHOOK_USERNAME
+    webhookPassword: process.env.WEBHOOK_PASSWORD
+    username: process.env.COACH_USERNAME
+    password: process.env.COACH_PASSWORD
   test:
     redisMQ:
       host: '0.0.0.0'
@@ -20,15 +23,21 @@ settings =
       password: null
       database: 0
     webhookHost: 'http://127.0.0.1:3306'
-    webhookSecret: 'foobar'
+    webhookUsername: 'aio'
+    webhookPassword: 'foobar'
+    username: 'aio'
+    password: 'foobar'
   production:
     redisMQ:
-      host: '0.0.0.0'
-      port: 6379
+      host: process.env.REDIS_HOST
+      port: process.env.REDIS_PORT
       password: null
       database: 0
-    webhookHost: 'https://www.action.io'
-    webhookSecret: 'foobar'
+    webhookHost: process.env.WEBHOOK_HOST
+    webhookUsername: process.env.WEBHOOK_USERNAME
+    webhookPassword: process.env.WEBHOOK_PASSWORD
+    username: process.env.COACH_USERNAME
+    password: process.env.COACH_PASSWORD
 
 module.exports = _.extend settings.common, settings[env]
 

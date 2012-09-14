@@ -26,6 +26,7 @@ describe 'BoxesController', ->
         request(app)
           .post('/boxes')
           .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'})
+          .auth('aio', 'foobar')
           .expect(404)
           .end (err, res) ->
             resultObject = JSON.parse(res.text)
@@ -57,6 +58,7 @@ describe 'BoxesController', ->
 
             request(app)
               .post('/boxes')
+              .auth('aio', 'foobar')
               .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'})
               .expect(202)
               .end (err, res) ->
@@ -89,6 +91,7 @@ describe 'BoxesController', ->
           request(app)
             .put('/boxes/mclovin/start')
             .send('box': {'boxer_id':'boxer-id'})
+            .auth('aio', 'foobar')
             .expect(202)
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
@@ -118,6 +121,7 @@ describe 'BoxesController', ->
 
           request(app)
             .put('/boxes/mclovin/stop')
+            .auth('aio', 'foobar')
             .send('box': {'boxer_id':'boxer-id'})
             .expect(202)
             .end (err, res) ->
@@ -148,6 +152,7 @@ describe 'BoxesController', ->
 
           request(app)
             .put('/boxes/mclovin/destroy')
+            .auth('aio', 'foobar')
             .send('box': {'boxer_id':'boxer-id'})
             .expect(202)
             .end (err, res) ->

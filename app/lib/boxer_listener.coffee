@@ -1,5 +1,4 @@
 MessageParser = require './message_parser'
-Pusher = require './pusher'
 ActionWebhook = require './action_webhook'
 protocol = require '../protocol'
 initRedisClientWith = require('./utils').initRedisClientWith
@@ -39,9 +38,9 @@ module.exports = class BoxerListener
       # Send a notification to Pusher
       # Call the web hook in action.io which updates the status of the box
       boxId = message.boxId
-      Pusher.send_notification message, (err) ->
-        ActionWebhook.send_notification message if !err
-
+      ActionWebhook.sendNotification message, (err) ->
+        if err
+          console.log "Error -> #{err} while sending notification"
 
   chooseBoxer: (runtime, memory) ->
     # Randomize the available boxer (if there is more than one available)
@@ -57,7 +56,6 @@ module.exports = class BoxerListener
       else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
                _.include(boxer.runtimes, runtime))
         availableBoxer = boxer
-        return
 
     availableBoxer
 

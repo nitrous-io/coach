@@ -1,4 +1,10 @@
+request = require 'superagent'
+settings = require '../../config/settings'
+
 module.exports = class ActionWebhook
   @sendNotification: (message, cb) ->
-    err = null
-    cb(err)
+    request.put("#{settings.webhookHost}/boxes/#{message.boxId}/webhook")
+           .send(payload: message.encode())
+           .set('X-SECRET': settings.webhookSecret)
+           .end (err, res) ->
+             cb(err, res)

@@ -17,5 +17,6 @@ global.assert = global.chai.assert
 global.chai.use(sinonChai)
 
 global.cleanDB = require './support/clean_db'
+global.newBoxer = require './support/new_boxer'
 global.app = require('../app').app
 

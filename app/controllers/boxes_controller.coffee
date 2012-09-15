@@ -44,6 +44,14 @@ module.exports = class BoxesController extends ApplicationController
                 id: @params['box'].boxer_id
     this._renderResult(protocol.DestroyMessage, attributes)
 
+  update: ->
+    attributes =
+                name: @params['name']
+                id: @params['box'].boxer_id
+                dataType: @params['box'].data_type
+                data: @params['box'].data
+
+    this._renderResult(protocol.ConfigureMessage, attributes)
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
 

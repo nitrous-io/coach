@@ -3,6 +3,7 @@ process.env.NODE_ENV ?= 'development'
 _ = require 'underscore'
 settings = require './config/settings'
 BoxerListener = require './app/lib/boxer_listener'
+logger = require './app/lib/logger'
 
 express = require 'express'
 app = express()
@@ -20,7 +21,7 @@ require('./config/routes')(app)
 # uncaught exception handler
 if env == 'production'
   process.on 'uncaughtException', (err) ->
-    console.log err
+    logger.error err
 
 # boxer listener
 boxerListener = new BoxerListener(settings)
@@ -29,10 +30,10 @@ boxerListener.run()
 if require.main == module || require.main.filename.match /boot\.js/
   server = app.listen(process.env.PORT || 4000)
   unless address = server.address()
-    console.log 'Could not start coach!'
+    logger.info 'Could not start coach!'
     return
 
-  console.log "coach listening on port %d in %s mode", address.port, env
+  logger.info "coach listening on port #{address.port} in #{env} mode"
 
 module.exports =
                 app: app

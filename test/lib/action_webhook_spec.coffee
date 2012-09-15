@@ -11,7 +11,7 @@ describe 'ActionWebhook', ->
       message = new StartedMessage
                                   id: 'boxer-id'
                                   boxId: 1
-                                  hostName: 'mclovin'
+                                  name: 'mclovin'
 
       app = express()
       app.configure ->
@@ -32,7 +32,7 @@ describe 'ActionWebhook', ->
       ActionWebhook.sendNotification message, (err, res) ->
         expect(res.body['id']).to.eql 'boxer-id'
         expect(res.body['boxId']).to.eql 1
-        expect(res.body['hostName']).to.eql 'mclovin'
+        expect(res.body['name']).to.eql 'mclovin'
         expect(res.body['type']).to.eql 'aio.started'
         done()
 

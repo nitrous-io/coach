@@ -21,6 +21,7 @@ module.exports = class BoxesController extends ApplicationController
 
     if boxer?
       attributes['id'] = boxer.id
+      console.log "Box ID: #{attributes.boxId}"
       this._renderResult(protocol.CreateMessage, attributes)
     else
       @response.send 404, JSON.stringify("status":"MISSING")

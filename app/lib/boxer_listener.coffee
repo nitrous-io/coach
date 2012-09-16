@@ -6,7 +6,7 @@ initRedisClientWith = require('./utils').initRedisClientWith
 _ = require 'underscore'
 
 class Boxer
-  @EXPIRY_TIME = 10
+  @EXPIRY_TIME = 10 * 1000 # 10 seconds
 
   constructor: (@id, @runtimes, @freeMemory) ->
     @lastUpdatedAt = new Date().valueOf()
@@ -27,13 +27,20 @@ module.exports = class BoxerListener
           self._handle(parsedMessage)
 
   _handle: (message) ->
+    logger.info "Received Message Type: #{message.type}"
+
     if message.type == protocol.AdvertiseMessage.type
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        boxer.lastUpdatedAt = new Date().valueOf()
+        updatedAt = new Date().valueOf()
+        logger.debug "Updating #{boxer.id} with #{updatedAt}"
+        boxer.lastUpdatedAt = updatedAt
+        logger.debug "Finished updating #{@boxers[message.id].lastUpdatedAt}"
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
-    else if message.type == protocol.StartedMessage.type ||
+        logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
+    else if message.type == protocol.CreatedMessage.type ||
+            message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.DestroyedMessage.type
       # Send a notification to Pusher
@@ -49,10 +56,14 @@ module.exports = class BoxerListener
     self = this
     availableBoxer = null
 
+    logger.info "Available Boxer IDs: #{availableBoxerIds}"
+
     _.each availableBoxerIds, (id) ->
       boxer = self.boxers[id]
+      console.log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
+        logger.debug "Expired Boxer: #{id}, deleting"
         self.boxers[id] = null
       else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
                _.include(boxer.runtimes, runtime))

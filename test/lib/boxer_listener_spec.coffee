@@ -37,12 +37,12 @@ describe 'BoxerListener', ->
         boxer1 = newBoxer('boxer-1',
                           ['ruby', 'php', 'python'],
                           2048,
-                          new Date().valueOf() - 1)
+                          new Date().valueOf() - (1 * 1000))
 
         boxer2 = newBoxer('boxer-2',
                           ['ruby']
                           1024,
-                          new Date().valueOf() - 20)
+                          new Date().valueOf() - (20 * 1000))
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
@@ -61,12 +61,12 @@ describe 'BoxerListener', ->
         boxer1 = newBoxer('boxer-1',
                           ['php', 'python'],
                           2048,
-                          new Date().valueOf() - 1)
+                          new Date().valueOf() - (1 * 1000))
 
         boxer2 = newBoxer('boxer-2',
                           ['ruby']
                           1024,
-                          new Date().valueOf() - 2)
+                          new Date().valueOf() - (2 * 1000))
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
@@ -83,12 +83,12 @@ describe 'BoxerListener', ->
         boxer1 = newBoxer('boxer-1',
                           ['ruby', 'php', 'python'],
                           2048,
-                          new Date().valueOf() - 1)
+                          new Date().valueOf() - (1 * 1000))
 
         boxer2 = newBoxer('boxer-2',
                           ['ruby']
                           128,
-                          new Date().valueOf() - 2)
+                          new Date().valueOf() - (2 * 1000))
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
@@ -105,12 +105,13 @@ describe 'BoxerListener', ->
         boxer1 = newBoxer('boxer-1',
                           ['ruby', 'php', 'python'],
                           2048,
-                          new Date().valueOf() - 1)
+                          new Date().valueOf() - (1 * 1000))
 
         boxer2 = newBoxer('boxer-2',
                           ['ruby']
                           1024,
-                          new Date().valueOf() - 2)
+                          new Date().valueOf() - (2 * 1000))
+
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 

@@ -32,10 +32,7 @@ module.exports = class BoxerListener
     if message.type == protocol.AdvertiseMessage.type
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        updatedAt = new Date().valueOf()
-        logger.info "Updating #{boxer.id} with #{updatedAt}"
-        boxer.lastUpdatedAt = updatedAt
-        logger.info "Finished updating #{@boxers[message.id].lastUpdatedAt}"
+        boxer.lastUpdatedAt = new Date().valueOf()
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
         logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"

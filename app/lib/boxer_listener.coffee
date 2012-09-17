@@ -33,9 +33,9 @@ module.exports = class BoxerListener
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
         updatedAt = new Date().valueOf()
-        logger.debug "Updating #{boxer.id} with #{updatedAt}"
+        logger.info "Updating #{boxer.id} with #{updatedAt}"
         boxer.lastUpdatedAt = updatedAt
-        logger.debug "Finished updating #{@boxers[message.id].lastUpdatedAt}"
+        logger.info "Finished updating #{@boxers[message.id].lastUpdatedAt}"
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
         logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
@@ -60,10 +60,10 @@ module.exports = class BoxerListener
 
     _.each availableBoxerIds, (id) ->
       boxer = self.boxers[id]
-      console.log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
+      logger.info "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
-        logger.debug "Expired Boxer: #{id}, deleting"
+        logger.info "Expired Boxer: #{id}, deleting"
         self.boxers[id] = null
       else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
                _.include(boxer.runtimes, runtime))

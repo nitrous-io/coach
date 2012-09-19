@@ -53,6 +53,7 @@ module.exports = class BoxesController extends ApplicationController
                 data: @params['box'].data
 
     this._renderResult(protocol.ConfigureMessage, attributes)
+
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
 

@@ -51,7 +51,7 @@ describe 'BoxesController', ->
               expect(parsedMessage.runtime).to.eql 'ruby'
               expect(parsedMessage.memory).to.eql '256'
               expect(parsedMessage.diskSpace).to.eql '2048'
-              expect(parsedMessage.type).to.eql 'aio.create'
+              expect(parsedMessage.type).to.eql 'aio:create'
               expect(parsedMessage.id).to.eql 'boxer-id'
 
               done()
@@ -84,7 +84,7 @@ describe 'BoxesController', ->
             parsedMessage = JSON.parse(rawMessage)
             expect(parsedMessage.name).to.eql 'mclovin'
             expect(parsedMessage.id).to.eql 'boxer-id'
-            expect(parsedMessage.type).to.eql 'aio.start'
+            expect(parsedMessage.type).to.eql 'aio:start'
 
             done()
 
@@ -116,8 +116,8 @@ describe 'BoxesController', ->
               parsedMessage = JSON.parse(rawMessage)
               expect(parsedMessage.name).to.eql 'mclovin'
               expect(parsedMessage.id).to.eql 'boxer-id'
-              expect(parsedMessage.type).to.eql 'aio.configure'
-              expect(parsedMessage.dataType).to.eql 'aio.configure.add_public_key'
+              expect(parsedMessage.type).to.eql 'aio:configure'
+              expect(parsedMessage.dataType).to.eql 'aio:configure:add_public_key'
               expect(parsedMessage.data).to.eql 'public-key'
 
               done()
@@ -125,7 +125,7 @@ describe 'BoxesController', ->
             request(app)
               .put('/boxes/mclovin')
               .auth('aio', 'foobar')
-              .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio.configure.add_public_key', 'data': 'public-key'})
+              .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:add_public_key', 'data': 'public-key'})
               .expect(202)
               .end (err, res) ->
                 resultObject = JSON.parse(res.text)
@@ -139,8 +139,8 @@ describe 'BoxesController', ->
               parsedMessage = JSON.parse(rawMessage)
               expect(parsedMessage.name).to.eql 'mclovin'
               expect(parsedMessage.id).to.eql 'boxer-id'
-              expect(parsedMessage.type).to.eql 'aio.configure'
-              expect(parsedMessage.dataType).to.eql 'aio.configure.remove_public_key'
+              expect(parsedMessage.type).to.eql 'aio:configure'
+              expect(parsedMessage.dataType).to.eql 'aio:configure:remove_public_key'
               expect(parsedMessage.data).to.eql 'public-key'
 
               done()
@@ -148,7 +148,7 @@ describe 'BoxesController', ->
             request(app)
               .put('/boxes/mclovin')
               .auth('aio', 'foobar')
-              .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio.configure.remove_public_key', 'data': 'public-key'})
+              .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:remove_public_key', 'data': 'public-key'})
               .expect(202)
               .end (err, res) ->
                 resultObject = JSON.parse(res.text)
@@ -172,7 +172,7 @@ describe 'BoxesController', ->
             parsedMessage = JSON.parse(rawMessage)
             expect(parsedMessage.name).to.eql 'mclovin'
             expect(parsedMessage.id).to.eql 'boxer-id'
-            expect(parsedMessage.type).to.eql 'aio.stop'
+            expect(parsedMessage.type).to.eql 'aio:stop'
 
             done()
 
@@ -203,7 +203,7 @@ describe 'BoxesController', ->
             parsedMessage = JSON.parse(rawMessage)
             expect(parsedMessage.name).to.eql 'mclovin'
             expect(parsedMessage.id).to.eql 'boxer-id'
-            expect(parsedMessage.type).to.eql 'aio.destroy'
+            expect(parsedMessage.type).to.eql 'aio:destroy'
 
             done()
 

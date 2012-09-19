@@ -33,7 +33,7 @@ describe 'ActionWebhook', ->
         expect(res.body['id']).to.eql 'boxer-id'
         expect(res.body['boxId']).to.eql 1
         expect(res.body['name']).to.eql 'mclovin'
-        expect(res.body['type']).to.eql 'aio.started'
+        expect(res.body['type']).to.eql 'aio:started'
         done()
 
 

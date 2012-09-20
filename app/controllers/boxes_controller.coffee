@@ -7,17 +7,18 @@ module.exports = class BoxesController extends ApplicationController
   create: ->
     boxerListener = require('../../app').boxerListener
 
-    boxer = boxerListener.chooseBoxer @params['box'].runtime,
-                                      @params['box'].memory,
-                                      @params['box'].disk_space
+    boxer = boxerListener.chooseBoxer @params.box.runtime,
+                                      @params.box.memory,
+                                      @params.box.disk_space
 
     attributes =
-                name: @params['box'].name
-                boxId: @params['box'].id
-                runtime: @params['box'].runtime
-                memory: @params['box'].memory
-                diskSpace: @params['box'].disk_space
-                snapshotURL: @params['box'].snapshot_url
+                name: @params.box.name
+                boxId: @params.box.id
+                runtime: @params.box.runtime
+                memory: @params.box.memory
+                diskSpace: @params.box.disk_space
+                snapshotURL: @params.box.snapshot_url
+
 
     if boxer?
       attributes['id'] = boxer.id
@@ -29,28 +30,28 @@ module.exports = class BoxesController extends ApplicationController
 
   start: ->
     attributes =
-                name: @params['name']
-                id: @params['box'].boxer_id
+                name: @params.name
+                id: @params.box.boxer_id
     this._renderResult(protocol.StartMessage, attributes)
 
   stop: ->
     attributes =
-                name: @params['name']
-                id: @params['box'].boxer_id
+                name: @params.name
+                id: @params.box.boxer_id
     this._renderResult(protocol.StopMessage, attributes)
 
   destroy: ->
     attributes =
-                name: @params['name']
-                id: @params['box'].boxer_id
+                name: @params.name
+                id: @params.box.boxer_id
     this._renderResult(protocol.DestroyMessage, attributes)
 
   update: ->
     attributes =
-                name: @params['name']
-                id: @params['box'].boxer_id
-                dataType: @params['box'].data_type
-                data: @params['box'].data
+                name: @params.name
+                id: @params.box.boxer_id
+                dataType: @params.box.data_type
+                data: @params.box.data
 
     this._renderResult(protocol.ConfigureMessage, attributes)
 

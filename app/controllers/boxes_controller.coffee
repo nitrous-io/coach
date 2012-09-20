@@ -1,6 +1,7 @@
 publisher = require '../lib/redis_client'
 protocol = require '../protocol'
 settings = require '../../config/settings'
+logger = require '../lib/logger'
 ApplicationController = require './application_controller'
 
 module.exports = class BoxesController extends ApplicationController
@@ -19,6 +20,11 @@ module.exports = class BoxesController extends ApplicationController
                 diskSpace: @params.box.disk_space
                 snapshotURL: @params.box.snapshot_url
 
+    if @params.box.public_keys?
+      try
+        attributes.publicKeys = JSON.parse(@params.box.public_keys)
+      catch error
+        logger.error "Error in Parsing Public Keys: #{error}"
 
     if boxer?
       attributes['id'] = boxer.id

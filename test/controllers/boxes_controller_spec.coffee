@@ -22,7 +22,7 @@ describe 'BoxesController', ->
       afterEach ->
         boxerListener.chooseBoxer.restore()
 
-      it 'responds with 202', (done) ->
+      it 'responds with 404', (done) ->
         request(app)
           .post('/boxes')
           .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'})
@@ -33,7 +33,7 @@ describe 'BoxesController', ->
             expect(resultObject.status).to.eql "MISSING"
             done()
 
-    context 'boxer is present', ->
+    context 'boxer is present (valid params)', ->
       beforeEach ->
         sinon.stub boxerListener, 'chooseBoxer', (runtime, memory, diskSpace) ->
           id: 'boxer-id'
@@ -53,13 +53,47 @@ describe 'BoxesController', ->
               expect(parsedMessage.diskSpace).to.eql '2048'
               expect(parsedMessage.type).to.eql 'aio:create'
               expect(parsedMessage.id).to.eql 'boxer-id'
+              expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
 
               done()
 
             request(app)
               .post('/boxes')
               .auth('aio', 'foobar')
-              .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'})
+              .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','public_keys':'["public-key-1","public-key-2"]'})
+              .expect(202)
+              .end (err, res) ->
+                resultObject = JSON.parse(res.text)
+                expect(resultObject.status).to.eql "OK"
+
+    context 'boxer is present (invalid params)', ->
+      beforeEach ->
+        sinon.stub boxerListener, 'chooseBoxer', (runtime, memory, diskSpace) ->
+          id: 'boxer-id'
+
+      afterEach ->
+        boxerListener.chooseBoxer.restore()
+
+      it 'responds with 202', (done) ->
+        boxer.subscribe settings.boxerChannel, (err, result) ->
+          if !err
+            boxer.on 'message', (channel, rawMessage) ->
+              parsedMessage = JSON.parse(rawMessage)
+              expect(parsedMessage.name).to.eql 'mclovin'
+              expect(parsedMessage.boxId).to.eql '1'
+              expect(parsedMessage.runtime).to.eql 'ruby'
+              expect(parsedMessage.memory).to.eql '256'
+              expect(parsedMessage.diskSpace).to.eql '2048'
+              expect(parsedMessage.type).to.eql 'aio:create'
+              expect(parsedMessage.id).to.eql 'boxer-id'
+              expect(parsedMessage.publicKeys).to.be.undefined
+
+              done()
+
+            request(app)
+              .post('/boxes')
+              .auth('aio', 'foobar')
+              .send('box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','public_keys':'abc'})
               .expect(202)
               .end (err, res) ->
                 resultObject = JSON.parse(res.text)

@@ -18,11 +18,11 @@ default_run_options[:pty] = true
 default_run_options[:shell] = '/bin/bash --login'
 
 task :staging do
-  set :host, "coach-apse-staging.action.io"
+  set :host, "coach-apse1-staging.action.io"
 end
 
 task :production do
-  set :host, "coach-apse-1.action.io"
+  set :host, "coach-apse1.action.io"
 end
 
 role :web, host

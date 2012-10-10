@@ -46,15 +46,15 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever start boot.js"
+    run "cd #{latest_release} && export $(cat .env) && forever start coach.js"
   end
 
   task :stop, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever stop boot.js"
+    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js"
   end
 
   task :restart, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever stop boot.js && forever start boot.js"
+    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js && forever start coach.js"
   end
 
   task :npm, :roles => :app do
@@ -69,7 +69,7 @@ namespace :deploy do
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd #{latest_release} && export $(cat .env) && forever stop boot.js && forever start boot.js"
+    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js && forever start coach.js"
   end
 end
 

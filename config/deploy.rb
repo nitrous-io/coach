@@ -19,14 +19,15 @@ default_run_options[:shell] = '/bin/bash --login'
 
 task :staging do
   set :host, "coach-apse1-staging.action.io"
+  role :web, host
+  role :app, host
 end
 
 task :production do
   set :host, "coach-apse1.action.io"
+  role :web, host
+  role :app, host
 end
-
-role :web, host
-role :app, host
 
 # if you want to clean up old releases on each deploy uncomment this:
 after "deploy:restart", "deploy:cleanup"

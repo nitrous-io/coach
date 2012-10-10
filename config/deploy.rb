@@ -4,10 +4,11 @@ set :repository,  "git@github.com:action-io/#{application}.git"
 set :scm, :git
 set :deploy_via, :remote_cache
 set :branch, :master
-set :user, 'coach'
+set :user, 'action'
 set :deploy_to, "/var/apps/#{application}"
 set :use_sudo, false
 set :git_enable_submodules, 1
+set :port, 65100
 
 set :default_environment, {
   'PATH' =>  "$HOME/.nvm/v0.8.1/bin:$PATH"
@@ -16,7 +17,14 @@ set :default_environment, {
 default_run_options[:pty] = true
 default_run_options[:shell] = '/bin/bash --login'
 
-set :host, "coach-apse-1.action.io"
+task :staging do
+  set :host, "coach-apse-staging.action.io"
+end
+
+task :production do
+  set :host, "coach-apse-1.action.io"
+end
+
 role :web, host
 role :app, host
 

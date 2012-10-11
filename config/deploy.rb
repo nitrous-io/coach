@@ -7,24 +7,20 @@ set :branch, :master
 set :user, 'action'
 set :deploy_to, "/var/apps/#{application}"
 set :use_sudo, false
-set :git_enable_submodules, 1
 set :port, 65100
-
-set :default_environment, {
-  'PATH' =>  "$HOME/.nvm/v0.8.1/bin:$PATH"
-}
+set :git_enable_submodules, 1
 
 default_run_options[:pty] = true
 default_run_options[:shell] = '/bin/bash --login'
 
-task :staging do
-  set :host, "coach-apse1-staging.action.io"
+task :production do
+  set :host, "coach-apse1.action.io"
   role :web, host
   role :app, host
 end
 
-task :production do
-  set :host, "coach-apse1.action.io"
+task :staging do
+  set :host, "coach-apse1-staging.action.io"
   role :web, host
   role :app, host
 end
@@ -46,15 +42,16 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever start coach.js"
+    run "sudo /usr/sbin/service #{application} start"
   end
 
   task :stop, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js"
+    run "sudo /usr/sbin/service #{application} stop"
   end
 
   task :restart, :roles => :app do
-    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js && forever start coach.js"
+    stop
+    start
   end
 
   task :npm, :roles => :app do
@@ -69,7 +66,8 @@ namespace :deploy do
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd #{latest_release} && export $(cat .env) && forever stop coach.js && forever start coach.js"
+    run "if [ -f /var/run/#{application}.pid ]; then sudo /usr/sbin/service #{application} stop; fi"
+    run "sudo /usr/sbin/service #{application} start"
   end
 end
 

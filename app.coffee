@@ -19,9 +19,9 @@ require('./config/application')(app)
 require('./config/routes')(app)
 
 # uncaught exception handler
-if env == 'production'
-  process.on 'uncaughtException', (err) ->
-    logger.error err
+if env == 'production' || env == 'staging'
+  airbrake = require('airbrake').createClient(app.settings.airbrakeKey)
+  airbrake.handleExceptions()
 
 # boxer listener
 boxerListener = new BoxerListener(settings)

@@ -13,6 +13,7 @@
   , "redis"          : "0.7.x"
   , "superagent"     : "0.9.x"
   , "winston"        : "0.6.x"
+  , "airbrake"       : "0.2.x"
   }
 , "devDependencies": {
     "mocha"        : "1.3.x"
@@ -29,4 +30,3 @@
     "test": "make test"
   }
 }
-

@@ -18,9 +18,8 @@ require('./config/application')(app)
 # routes
 require('./config/routes')(app)
 
-# uncaught exception handler
-if env == 'production' || env == 'staging'
-  airbrake = require('airbrake').createClient(app.settings.airbrakeKey)
+if app.settings.airbrakeAPIKey
+  airbrake = require('airbrake').createClient app.settings.airbrakeAPIKey
   airbrake.handleExceptions()
 
 # boxer listener

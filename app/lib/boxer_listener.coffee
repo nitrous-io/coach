@@ -33,6 +33,7 @@ module.exports = class BoxerListener
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
         boxer.lastUpdatedAt = new Date().valueOf()
+        boxer.runtimes = message.runtimes
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
         logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"

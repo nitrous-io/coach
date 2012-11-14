@@ -27,12 +27,16 @@ module.exports = class BoxerListener
           self._handle(parsedMessage)
 
   _handle: (message) ->
-    logger.info "Received Message Type: #{message.type}"
 
     if message.type == protocol.AdvertiseMessage.type
+      now = new Date().valueOf()
+
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        boxer.lastUpdatedAt = new Date().valueOf()
+        logger.info "Received Message Type: #{message.type} for #{message.id}" if now % 5 == 0
+
+        boxer.lastUpdatedAt = now
+        boxer.runtimes = message.runtimes
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
         logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
@@ -40,6 +44,7 @@ module.exports = class BoxerListener
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.DestroyedMessage.type
+      logger.info "Received Message Type: #{message.type}"
       # Send a notification to Pusher
       # Call the web hook in action.io which updates the status of the box
       boxId = message.boxId

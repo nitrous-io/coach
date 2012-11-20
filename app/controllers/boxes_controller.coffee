@@ -46,6 +46,12 @@ module.exports = class BoxesController extends ApplicationController
                 id: @params.box.boxer_id
     this._renderResult(protocol.StopMessage, attributes)
 
+  restart: ->
+    attributes =
+                name: @params.name
+                id: @params.box.boxer_id
+    this._renderResult(protocol.RestartMessage, attributes)
+
   destroy: ->
     attributes =
                 name: @params.name
@@ -73,4 +79,3 @@ module.exports = class BoxesController extends ApplicationController
         self.response.send 500, JSON.stringify
                                           "status" : "ERROR"
                                           "text" : err
-

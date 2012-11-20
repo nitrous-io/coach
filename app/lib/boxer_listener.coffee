@@ -43,6 +43,7 @@ module.exports = class BoxerListener
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
+            message.type == protocol.RestartedMessage.type ||
             message.type == protocol.DestroyedMessage.type
       logger.info "Received Message Type: #{message.type}"
       # Send a notification to Pusher
@@ -72,4 +73,3 @@ module.exports = class BoxerListener
         availableBoxer = boxer
 
     availableBoxer
-

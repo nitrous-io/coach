@@ -227,6 +227,36 @@ describe 'BoxesController', ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
 
+  describe 'PUT restart', ->
+    beforeEach (done) ->
+      settings = require '../../config/settings'
+      boxer = initRedisClientWith(settings.redisMQ)
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    afterEach ->
+      boxer.unsubscribe()
+      boxer = null
+
+    it 'responds with 202', (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        if !err
+          boxer.on 'message', (channel, rawMessage) ->
+            parsedMessage = JSON.parse(rawMessage)
+            expect(parsedMessage.name).to.eql 'mclovin'
+            expect(parsedMessage.id).to.eql 'boxer-id'
+            expect(parsedMessage.type).to.eql 'aio:restart'
+            done()
+
+          request(app)
+            .put('/boxes/mclovin/restart')
+            .auth('aio', 'foobar')
+            .send('box': {'boxer_id':'boxer-id'})
+            .expect(202)
+            .end (err, res) ->
+              resultObject = JSON.parse(res.text)
+              expect(resultObject.status).to.eql "OK"
+
   describe 'PUT destroy', ->
     beforeEach (done) ->
       settings = require '../../config/settings'
@@ -257,4 +287,3 @@ describe 'BoxesController', ->
             .end (err, res) ->
               resultObject = JSON.parse(res.text)
               expect(resultObject.status).to.eql "OK"
-

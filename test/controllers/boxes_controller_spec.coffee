@@ -196,6 +196,50 @@ describe 'BoxesController', ->
                 resultObject = JSON.parse(res.text)
                 expect(resultObject.status).to.eql "OK"
 
+    context 'setting env variables', ->
+      it 'responds with 202', (done) ->
+        boxer.subscribe settings.boxerChannel, (err, result) ->
+          return done(err) if err
+          boxer.on 'message', (channel, rawMessage) ->
+            parsedMessage = JSON.parse(rawMessage)
+            expect(parsedMessage.name).to.eql 'mclovin'
+            expect(parsedMessage.id).to.eql 'boxer-id'
+            expect(parsedMessage.type).to.eql 'aio:configure'
+            expect(parsedMessage.dataType).to.eql 'aio:configure:set_env_variables'
+            expect(parsedMessage.data).to.eql {'env1': '123', 'env2': '234'}
+            done()
+
+          request(app)
+            .put('/boxes/mclovin')
+            .auth('aio', 'foobar')
+            .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:set_env_variables', 'data': {'env1': '123', 'env2': '234'}})
+            .expect(202)
+            .end (err, res) ->
+              resultObject = JSON.parse(res.text)
+              expect(resultObject.status).to.eql "OK"
+
+    context 'removing env variables', ->
+      it 'responds with 202', (done) ->
+        boxer.subscribe settings.boxerChannel, (err, result) ->
+          return done(err) if err
+          boxer.on 'message', (channel, rawMessage) ->
+            parsedMessage = JSON.parse(rawMessage)
+            expect(parsedMessage.name).to.eql 'mclovin'
+            expect(parsedMessage.id).to.eql 'boxer-id'
+            expect(parsedMessage.type).to.eql 'aio:configure'
+            expect(parsedMessage.dataType).to.eql 'aio:configure:remove_env_variables'
+            expect(parsedMessage.data).to.eql ['env1', 'env2']
+            done()
+
+          request(app)
+            .put('/boxes/mclovin')
+            .auth('aio', 'foobar')
+            .send('box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:remove_env_variables', 'data': ['env1', 'env2']})
+            .expect(202)
+            .end (err, res) ->
+              resultObject = JSON.parse(res.text)
+              expect(resultObject.status).to.eql "OK"
+
   describe 'PUT stop', ->
     beforeEach (done) ->
       settings = require '../../config/settings'

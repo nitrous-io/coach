@@ -63,7 +63,15 @@ module.exports = class BoxesController extends ApplicationController
                 name: @params.name
                 id: @params.box.boxer_id
                 dataType: @params.box.data_type
-                data: @params.box.data
+
+    switch attributes.dataType
+      when 'aio:configure:remove_env_variables', 'aio:configure:set_env_variables'
+        try
+          attributes.data = JSON.parse @params.box.data
+        catch error
+          logger.error "Error in Parsing Configuration Data: #{error}"
+      else
+        attributes.data = @params.box.data
 
     this._renderResult(protocol.ConfigureMessage, attributes)
 

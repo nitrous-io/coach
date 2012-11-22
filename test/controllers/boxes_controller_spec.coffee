@@ -178,7 +178,10 @@ describe 'BoxesController', ->
 
         subscribeAndDo ->
           boxer.on 'message', assertMessage
-          put('/boxes/mclovin', {'box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:set_env_variables', 'data': {'env1': '123', 'env2': '234'}}})
+          put('/boxes/mclovin', {'box': {
+            'boxer_id':'boxer-id',
+            'data_type': 'aio:configure:set_env_variables',
+            'data': JSON.stringify({'env1': '123', 'env2': '234'})}})
             .expect(202)
             .end (err, res) -> assertStatus res, "OK"
 
@@ -195,7 +198,10 @@ describe 'BoxesController', ->
 
         subscribeAndDo ->
           boxer.on 'message', assertMessage
-          put('/boxes/mclovin', {'box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:remove_env_variables', 'data': ['env1', 'env2']}})
+          put('/boxes/mclovin', {'box': {
+            'boxer_id':'boxer-id',
+            'data_type': 'aio:configure:remove_env_variables',
+            'data': JSON.stringify(['env1', 'env2'])}})
             .expect(202)
             .end (err, res) -> assertStatus res, "OK"
 

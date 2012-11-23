@@ -26,12 +26,6 @@ module.exports = class BoxesController extends ApplicationController
       catch error
         logger.error "Error in Parsing Public Keys: #{error}"
 
-    if @params.box.ssh_key_pair?
-      try
-        attributes.sshKeyPair = JSON.parse @params.box.ssh_key_pair
-      catch error
-        logger.error "Error in Parsing SSH Key Pair: #{error}"
-
     if boxer?
       attributes['id'] = boxer.id
       console.log "Box ID: #{attributes.boxId}"

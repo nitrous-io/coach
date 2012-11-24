@@ -2,6 +2,9 @@ MessageParser = require '../../app/lib/message_parser'
 initRedisClientWith = require('../../app/lib/utils').initRedisClientWith
 boxerListener = require('../../app').boxerListener
 
+assertCode = (res, code) ->
+  expect(res.statusCode).to.eql code
+
 assertStatus = (res, status) ->
   resultObject = JSON.parse(res.text)
   expect(resultObject.status).to.eql status
@@ -40,9 +43,9 @@ describe 'BoxesController', ->
 
       it 'responds with 404', (done) ->
         post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'}})
-          .expect(404)
           .end (err, res) ->
             assertStatus res, "MISSING"
+            assertCode res, 404
             done()
 
     context 'boxer is present (valid params)', ->
@@ -74,8 +77,9 @@ describe 'BoxesController', ->
             'memory':'256',
             'disk_space':'2048',
             'public_keys':'["public-key-1","public-key-2"]',''}})
-            .expect(202)
-            .end (err, res) -> assertStatus res, "OK"
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
     context 'boxer is present (invalid params)', ->
       beforeEach ->
@@ -100,9 +104,9 @@ describe 'BoxesController', ->
         subscribeAndDo ->
           boxer.on 'message', assertMessage
           post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','public_keys':'abc'}})
-            .expect(202)
             .end (err, res) ->
               assertStatus res, "OK"
+              assertCode res, 202
 
   describe 'PUT start', ->
     beforeEach (done) ->
@@ -120,8 +124,9 @@ describe 'BoxesController', ->
       subscribeAndDo ->
         boxer.on 'message', assertMessage
         put('/boxes/mclovin/start', {'box': {'boxer_id':'boxer-id'}})
-          .expect(202)
-          .end (err, res) -> assertStatus res, "OK"
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202
 
   describe 'PUT update', ->
     beforeEach (done) ->
@@ -143,8 +148,9 @@ describe 'BoxesController', ->
           boxer.on 'message', assertMessage
 
           put('/boxes/mclovin', {'box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:add_public_key', 'data': 'public-key'}})
-            .expect(202)
-            .end (err, res) -> assertStatus res, "OK"
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
     context 'removing a public key', ->
       it 'responds with 202', (done) ->
@@ -160,8 +166,9 @@ describe 'BoxesController', ->
         subscribeAndDo ->
           boxer.on 'message', assertMessage
           put('/boxes/mclovin', {'box': {'boxer_id':'boxer-id', 'data_type': 'aio:configure:remove_public_key', 'data': 'public-key'}})
-            .expect(202)
-            .end (err, res) -> assertStatus res, "OK"
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
     context 'setting env variables', ->
       it 'responds with 202', (done) ->
@@ -180,8 +187,9 @@ describe 'BoxesController', ->
             'boxer_id':'boxer-id',
             'data_type': 'aio:configure:set_env_variables',
             'data': JSON.stringify({'env1': '123', 'env2': '234'})}})
-            .expect(202)
-            .end (err, res) -> assertStatus res, "OK"
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
     context 'removing env variables', ->
       it 'responds with 202', (done) ->
@@ -200,8 +208,9 @@ describe 'BoxesController', ->
             'boxer_id':'boxer-id',
             'data_type': 'aio:configure:remove_env_variables',
             'data': JSON.stringify(['env1', 'env2'])}})
-            .expect(202)
-            .end (err, res) -> assertStatus res, "OK"
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
   describe 'PUT stop', ->
     beforeEach (done) ->
@@ -219,8 +228,9 @@ describe 'BoxesController', ->
       subscribeAndDo ->
         boxer.on 'message', assertMessage
         put('/boxes/mclovin/stop', {'box': {'boxer_id':'boxer-id'}})
-          .expect(202)
-          .end (err, res) -> assertStatus res, "OK"
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202
 
   describe 'PUT restart', ->
     beforeEach (done) ->
@@ -238,8 +248,9 @@ describe 'BoxesController', ->
       subscribeAndDo ->
         boxer.on 'message', assertMessage
         put('/boxes/mclovin/restart', {'box': {'boxer_id':'boxer-id'}})
-          .expect(202)
-          .end (err, res) -> assertStatus res, "OK"
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202
 
   describe 'PUT destroy', ->
     beforeEach (done) ->
@@ -258,5 +269,6 @@ describe 'BoxesController', ->
         boxer.on 'message', assertMessage
 
         put('/boxes/mclovin/destroy', {'box': {'boxer_id':'boxer-id'}})
-          .expect(202)
-          .end (err, res) -> assertStatus res, "OK"
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202

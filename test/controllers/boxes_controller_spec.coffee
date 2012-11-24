@@ -54,8 +54,6 @@ describe 'BoxesController', ->
               expect(parsedMessage.type).to.eql 'aio:create'
               expect(parsedMessage.id).to.eql 'boxer-id'
               expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
-              expect(parsedMessage.sshKeyPair).to.eql {'public_key': 'public-key','private_key': 'private-key'}
-
               done()
 
             request(app)
@@ -67,7 +65,6 @@ describe 'BoxesController', ->
                 'runtime':'ruby',
                 'memory':'256',
                 'disk_space':'2048',
-                'ssh_key_pair':"{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
                 'public_keys':'["public-key-1","public-key-2"]',''})
               .expect(202)
               .end (err, res) ->

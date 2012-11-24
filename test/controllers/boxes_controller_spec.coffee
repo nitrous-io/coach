@@ -63,7 +63,6 @@ describe 'BoxesController', ->
           expect(parsedMessage.type).to.eql 'aio:create'
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
-          expect(parsedMessage.sshKeyPair).to.eql {'public_key': 'public-key','private_key': 'private-key'}
           done()
 
         subscribeAndDo ->
@@ -74,7 +73,6 @@ describe 'BoxesController', ->
             'runtime':'ruby',
             'memory':'256',
             'disk_space':'2048',
-            'ssh_key_pair':"{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
             'public_keys':'["public-key-1","public-key-2"]',''}})
             .expect(202)
             .end (err, res) -> assertStatus res, "OK"
@@ -226,33 +224,22 @@ describe 'BoxesController', ->
 
   describe 'PUT restart', ->
     beforeEach (done) ->
-      settings = require '../../config/settings'
-      boxer = initRedisClientWith(settings.redisMQ)
       boxer.subscribe settings.boxerChannel, (err, result) ->
         done() if !err
 
-    afterEach ->
-      boxer.unsubscribe()
-      boxer = null
-
     it 'responds with 202', (done) ->
-      boxer.subscribe settings.boxerChannel, (err, result) ->
-        if !err
-          boxer.on 'message', (channel, rawMessage) ->
-            parsedMessage = JSON.parse(rawMessage)
-            expect(parsedMessage.name).to.eql 'mclovin'
-            expect(parsedMessage.id).to.eql 'boxer-id'
-            expect(parsedMessage.type).to.eql 'aio:restart'
-            done()
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.type).to.eql 'aio:restart'
+        done()
 
-          request(app)
-            .put('/boxes/mclovin/restart')
-            .auth('aio', 'foobar')
-            .send('box': {'boxer_id':'boxer-id'})
-            .expect(202)
-            .end (err, res) ->
-              resultObject = JSON.parse(res.text)
-              expect(resultObject.status).to.eql "OK"
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+        put('/boxes/mclovin/restart', {'box': {'boxer_id':'boxer-id'}})
+          .expect(202)
+          .end (err, res) -> assertStatus res, "OK"
 
   describe 'PUT destroy', ->
     beforeEach (done) ->

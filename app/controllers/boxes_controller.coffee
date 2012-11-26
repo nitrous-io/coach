@@ -38,25 +38,25 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
-    this._renderResult(protocol.StartMessage, attributes)
+    this._renderResult(protocol.StartMessage, this._mergeReturnVars(attributes))
 
   stop: ->
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
-    this._renderResult(protocol.StopMessage, attributes)
+    this._renderResult(protocol.StopMessage, this._mergeReturnVars(attributes))
 
   restart: ->
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
-    this._renderResult(protocol.RestartMessage, attributes)
+    this._renderResult(protocol.RestartMessage, this._mergeReturnVars(attributes))
 
   destroy: ->
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
-    this._renderResult(protocol.DestroyMessage, attributes)
+    this._renderResult(protocol.DestroyMessage, this._mergeReturnVars(attributes))
 
   update: ->
     attributes =
@@ -73,7 +73,7 @@ module.exports = class BoxesController extends ApplicationController
       else
         attributes.data = @params.box.data
 
-    this._renderResult(protocol.ConfigureMessage, attributes)
+    this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
@@ -87,3 +87,13 @@ module.exports = class BoxesController extends ApplicationController
         self.response.send 500, JSON.stringify
                                           "status" : "ERROR"
                                           "text" : err
+
+  _mergeReturnVars: (attributes) ->
+    if @params.return_vars?
+      try
+        parsedReturnVars = JSON.parse(@params.return_vars)
+        attributes.returnVars = parsedReturnVars
+      catch error
+        logger.error "Error in parsing return vars: #{error}"
+
+    attributes

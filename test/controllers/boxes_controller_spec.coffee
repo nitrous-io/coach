@@ -179,6 +179,7 @@ describe 'BoxesController', ->
           expect(parsedMessage.type).to.eql 'aio:configure'
           expect(parsedMessage.dataType).to.eql 'aio:configure:set_env_variables'
           expect(parsedMessage.data).to.eql {'env1': '123', 'env2': '234'}
+          expect(parsedMessage.returnVars).to.eql {'addon_id':1}
           done()
 
         subscribeAndDo ->
@@ -186,7 +187,7 @@ describe 'BoxesController', ->
           put('/boxes/mclovin', {'box': {
             'boxer_id':'boxer-id',
             'data_type': 'aio:configure:set_env_variables',
-            'data': JSON.stringify({'env1': '123', 'env2': '234'})}})
+            'data': JSON.stringify({'env1': '123', 'env2': '234'})}, 'return_vars': JSON.stringify({'addon_id':1})})
             .end (err, res) ->
               assertStatus res, "OK"
               assertCode res, 202
@@ -200,6 +201,7 @@ describe 'BoxesController', ->
           expect(parsedMessage.type).to.eql 'aio:configure'
           expect(parsedMessage.dataType).to.eql 'aio:configure:remove_env_variables'
           expect(parsedMessage.data).to.eql ['env1', 'env2']
+          expect(parsedMessage.returnVars).to.eql {'addon_id':1}
           done()
 
         subscribeAndDo ->
@@ -207,7 +209,7 @@ describe 'BoxesController', ->
           put('/boxes/mclovin', {'box': {
             'boxer_id':'boxer-id',
             'data_type': 'aio:configure:remove_env_variables',
-            'data': JSON.stringify(['env1', 'env2'])}})
+            'data': JSON.stringify(['env1', 'env2'])}, 'return_vars': JSON.stringify({'addon_id':1})})
             .end (err, res) ->
               assertStatus res, "OK"
               assertCode res, 202

@@ -33,7 +33,7 @@ module.exports = class BoxerListener
 
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        logger.info "Received Message Type: #{message.type} for #{message.id}" if now % 5 == 0
+        logger.info "Received Message Type: #{message.type} for #{message.id} (logged only every 30 secs)" if now % 30 == 0
 
         boxer.lastUpdatedAt = now
         boxer.runtimes = message.runtimes

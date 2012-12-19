@@ -17,9 +17,8 @@ logger = module.exports = new winston.Logger
                                         transports: [
                                           new winston.transports.Console colorize: true
                                           new winston.transports.File
-                                                                    filename: "log/#{env}.log"
+                                                                    filename: "log/coach.log"
                                                                     json: false
-                                                                    maxsize: 5 * 1024 * 1024
                                                                     timestamp: true
                                                                     handleExceptions: true
                                         ],

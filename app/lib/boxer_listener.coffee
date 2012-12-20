@@ -33,8 +33,6 @@ module.exports = class BoxerListener
 
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        logger.info "Received Message Type: #{message.type} for #{message.id} (logged only every 30 secs)" if now % 30 == 0
-
         boxer.lastUpdatedAt = now
         boxer.runtimes = message.runtimes
       else
@@ -66,7 +64,7 @@ module.exports = class BoxerListener
       logger.info "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
-        logger.info "Expired Boxer: #{id}, deleting"
+        logger.info "Error: Expired Boxer: #{id}, deleting"
         self.boxers[id] = null
       else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
                _.include(boxer.runtimes, runtime))

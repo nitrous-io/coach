@@ -1,4 +1,5 @@
 process.env.NODE_ENV ?= 'development'
+process.title = "coach"
 
 _ = require 'underscore'
 settings = require './config/settings'
@@ -21,6 +22,10 @@ require('./config/routes')(app)
 if app.settings.airbrakeAPIKey
   airbrake = require('airbrake').createClient app.settings.airbrakeAPIKey
   airbrake.handleExceptions()
+
+# send uptime/memory usage data to statsd
+Repoman = require('repoman')
+(new Repoman).collect()
 
 # boxer listener
 boxerListener = new BoxerListener(settings)

@@ -5,6 +5,7 @@ settings =
   common:
     boxerChannel: 'aio-boxer-channel'
     coachChannel: 'aio-coach-channel'
+    bombayChannel: 'aio-bombay-channel'
     redisMQ:
       host: process.env.REDIS_HOST
       port: process.env.REDIS_PORT

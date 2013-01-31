@@ -6,19 +6,13 @@ ApplicationController = require './application_controller'
 
 module.exports = class BoxesController extends ApplicationController
   create: ->
-    boxerListener = require('../../app').boxerListener
-
-    boxer = boxerListener.chooseBoxer @params.box.runtime,
-                                      @params.box.memory,
-                                      @params.box.disk_space
-
     attributes =
-                name: @params.box.name
-                boxId: @params.box.id
-                runtime: @params.box.runtime
-                memory: @params.box.memory
-                diskSpace: @params.box.disk_space
-                snapshotURL: @params.box.snapshot_url
+      name: @params.box.name
+      boxId: @params.box.id
+      runtime: @params.box.runtime
+      memory: @params.box.memory
+      diskSpace: @params.box.disk_space
+      snapshotURL: @params.box.snapshot_url
 
     if @params.box.public_keys?
       try
@@ -26,12 +20,26 @@ module.exports = class BoxesController extends ApplicationController
       catch error
         logger.error "Error in Parsing Public Keys: #{error}"
 
-    if boxer?
-      attributes['id'] = boxer.id
-      console.log "Box ID: #{attributes.boxId}"
-      this._renderResult(protocol.CreateMessage, attributes)
+    console.log "attributes", attributes, settings
+
+    if @params.box.runtime == 'dedicated'
+      # create a dedicated box with bombay
+      publisher.publish settings.bombayChannel, JSON.stringify(attributes), (err, res) =>
+        if !err
+          this.response.send 202, JSON.stringify("status" : "OK")
+        else
+          this.response.send 500, JSON.stringify("status" : "ERROR", "text" : err)
     else
-      @response.send 404, JSON.stringify("status":"MISSING")
+      boxerListener = require('../../app').boxerListener
+      boxer = boxerListener.chooseBoxer @params.box.runtime,
+                                        @params.box.memory,
+                                        @params.box.disk_space
+      if boxer?
+        attributes['id'] = boxer.id
+        console.log "Box ID: #{attributes.boxId}"
+        this._renderResult(protocol.CreateMessage, attributes)
+      else
+        @response.send 404, JSON.stringify("status":"MISSING")
 
 
   start: ->

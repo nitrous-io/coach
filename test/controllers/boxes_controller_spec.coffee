@@ -274,3 +274,24 @@ describe 'BoxesController', ->
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202
+
+  describe 'PUT snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.type).to.eql 'aio:snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/snapshot', {'box': {'boxer_id':'boxer-id'}})
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202

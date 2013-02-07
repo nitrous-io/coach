@@ -28,7 +28,7 @@ module.exports = class BoxesController extends ApplicationController
 
     if boxer?
       attributes['id'] = boxer.id
-      console.log "Box ID: #{attributes.boxId}"
+      logger.info "Box ID: #{attributes.boxId}"
       this._renderResult(protocol.CreateMessage, attributes)
     else
       @response.send 404, JSON.stringify("status":"MISSING")
@@ -74,6 +74,12 @@ module.exports = class BoxesController extends ApplicationController
         attributes.data = @params.box.data
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
+
+  snapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+    this._renderResult(protocol.SnapshotMessage, this._mergeReturnVars(attributes))
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)

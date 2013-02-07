@@ -13,15 +13,26 @@ config =
     debug: 'blue'
     error: 'red'
 
+transports = if env == 'test'
+  [
+    new winston.transports.File
+                              filename: "log/test.log"
+                              json: false
+                              timestamp: true
+  ]
+else
+  [
+    new winston.transports.Console colorize: true
+    new winston.transports.File
+                              filename: "log/coach.log"
+                              json: false
+                              timestamp: true
+                              handleExceptions: true
+  ]
+
+
 logger = module.exports = new winston.Logger
-                                        transports: [
-                                          new winston.transports.Console colorize: true
-                                          new winston.transports.File
-                                                                    filename: "log/coach.log"
-                                                                    json: false
-                                                                    timestamp: true
-                                                                    handleExceptions: true
-                                        ],
+                                        transports: transports,
                                         levels: config.levels
                                         colors: config.colors
 

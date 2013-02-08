@@ -21,7 +21,7 @@ require('./config/routes')(app)
 
 if app.settings.airbrakeAPIKey
   airbrake = require('airbrake').createClient app.settings.airbrakeAPIKey
-  airbrake.handleExceptions(false) # Don't die when exceptions occur
+  airbrake.handleExceptions() # Don't die when exceptions occur
 
 # send uptime/memory usage data to statsd
 Repoman = require('repoman')

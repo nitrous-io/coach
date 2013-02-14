@@ -285,13 +285,19 @@ describe 'BoxesController', ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.name).to.eql 'mclovin'
         expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.snapshotName).to.eql 'mclovin-snapshot'
         expect(parsedMessage.type).to.eql 'aio:snapshot'
         done()
 
       subscribeAndDo ->
         boxer.on 'message', assertMessage
 
-        put('/boxes/mclovin/snapshot', {'box': {'boxer_id':'boxer-id'}})
-          .end (err, res) ->
-            assertStatus res, "OK"
-            assertCode res, 202
+        put('/boxes/mclovin/snapshot',
+          {
+            'box': {'boxer_id':'boxer-id'},
+            'snapshot': {'id': 123, 'name': 'mclovin-snapshot'}
+          }
+        ).end (err, res) ->
+          assertStatus res, "OK"
+          assertCode res, 202

@@ -43,7 +43,7 @@ module.exports = class BoxerListener
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.RestartedMessage.type ||
             message.type == protocol.DestroyedMessage.type ||
-            message.type == protocol.SnapshottedMessage.type
+            message.type == protocol.SnapshottedMessage.type ||
             message.type == protocol.RestoredSnapshotMessage.type
       logger.info "Received Message Type: #{message.type}"
       # Send a notification to Pusher

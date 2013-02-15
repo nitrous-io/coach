@@ -1,8 +1,9 @@
-publisher = require '../lib/redis_client'
 protocol = require '../protocol'
 settings = require '../../config/settings'
 logger = require '../lib/logger'
 ApplicationController = require './application_controller'
+initRedisClientWith = require('../lib/utils').initRedisClientWith
+publisher = initRedisClientWith(settings.redisMQ)
 
 module.exports = class BoxesController extends ApplicationController
   create: ->

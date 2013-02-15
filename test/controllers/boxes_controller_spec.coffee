@@ -285,7 +285,7 @@ describe 'BoxesController', ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.name).to.eql 'mclovin'
         expect(parsedMessage.id).to.eql 'boxer-id'
-        expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.returnVars.snapshot_id).to.eql 123
         expect(parsedMessage.snapshotName).to.eql 'mclovin-snapshot'
         expect(parsedMessage.type).to.eql 'aio:snapshot'
         done()
@@ -296,7 +296,8 @@ describe 'BoxesController', ->
         put('/boxes/mclovin/snapshot',
           {
             'box': {'boxer_id':'boxer-id'},
-            'snapshot': {'id': 123, 'name': 'mclovin-snapshot'}
+            'return_vars': JSON.stringify({ 'snapshot_id': 123 }),
+            'snapshot_name': 'mclovin-snapshot'
           }
         ).end (err, res) ->
           assertStatus res, "OK"

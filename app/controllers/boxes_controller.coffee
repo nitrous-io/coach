@@ -79,8 +79,7 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
       name: @params.name
       id: @params.box.boxer_id
-      snapshotId: @params.snapshot.id
-      snapshotName: @params.snapshot.name
+      snapshotName: @params.snapshot_name
     this._renderResult(protocol.SnapshotMessage, this._mergeReturnVars(attributes))
 
   _renderResult: (klass, attributes) ->

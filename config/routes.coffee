@@ -9,3 +9,5 @@ module.exports = (app) ->
   app.put    '/boxes/:name/destroy',  to c.BoxesController, 'destroy'
   app.put    '/boxes/:name/snapshot', to c.BoxesController, 'snapshot'
   app.put    '/boxes/:name',          to c.BoxesController, 'update'
+
+  app.put    '/boxes/:name/restore_snapshot', to c.BoxesController, 'restore_snapshot'

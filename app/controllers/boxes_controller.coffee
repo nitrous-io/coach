@@ -90,6 +90,13 @@ module.exports = class BoxesController extends ApplicationController
       snapshotUrl: @params.snapshot_url
     this._renderResult(protocol.RestoreSnapshotMessage, this._mergeReturnVars(attributes))
 
+  deleteSnapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+      snapshotUrl: @params.snapshot_url
+    this._renderResult(protocol.DeleteSnapshotMessage, this._mergeReturnVars(attributes))
+
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
 

@@ -81,6 +81,27 @@ describe 'BoxesController', ->
               assertStatus res, "OK"
               assertCode res, 202
 
+      context 'when we want to clone a snapshot without specifying runtime', ->
+        it 'ignores the runtime when select boxer', (done) ->
+          assertMessage = (channel, rawMessage) ->
+            expect(boxerListener.chooseBoxer.callCount).to.eq 1
+            expect(boxerListener.chooseBoxer.calledWith(undefined, '256', '2048', true)).to.be.true
+            done()
+
+          subscribeAndDo ->
+            boxer.on 'message', assertMessage
+            post('/boxes', {'box': {
+              'name':'mclovin',
+              'id':'1',
+              'snapshot_url':'snapshot_url',
+              'memory':'256',
+              'disk_space':'2048',
+              'public_keys':'["public-key-1","public-key-2"]',''}})
+              .end (err, res) ->
+                assertStatus res, "OK"
+                assertCode res, 202
+            
+
     context 'boxer is present (invalid params)', ->
       beforeEach ->
         sinon.stub(boxerListener, 'chooseBoxer').returns id: 'boxer-id'

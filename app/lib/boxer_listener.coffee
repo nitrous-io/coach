@@ -18,16 +18,13 @@ module.exports = class BoxerListener
     @boxers = {}
 
   run: ->
-    self = this
-
-    @listener.subscribe @settings.coachChannel, (err, result) ->
+    @listener.subscribe @settings.coachChannel, (err, result) =>
       if !err
-        self.listener.on 'message', (channel, rawMessage) ->
+        @listener.on 'message', (channel, rawMessage) =>
           parsedMessage = MessageParser.decode(rawMessage)
-          self._handle(parsedMessage)
+          this._handle(parsedMessage)
 
   _handle: (message) ->
-
     if message.type == protocol.AdvertiseMessage.type
       now = new Date().valueOf()
 
@@ -54,23 +51,27 @@ module.exports = class BoxerListener
         if err
           logger.error "Error -> #{err} while sending notification"
 
-  chooseBoxer: (runtime, memory) ->
+  # choose a boxer to create a box
+  #
+  # runtime: boxer's runtime. This can be optional if the box is runtime
+  # independent i.e create from a snapshot
+  # memory: box's memory
+  chooseBoxer: (runtime, memory, diskSpace, ignoreRuntime = false) ->
     # Randomize the available boxer (if there is more than one available)
     availableBoxerIds = _.shuffle(_.keys(@boxers))
-    self = this
     availableBoxer = null
 
     logger.info "Available Boxer IDs: #{availableBoxerIds}"
 
-    _.each availableBoxerIds, (id) ->
-      boxer = self.boxers[id]
+    _.each availableBoxerIds, (id) =>
+      boxer = @boxers[id]
       logger.info "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
         logger.info "Error: Expired Boxer: #{id}, deleting"
-        self.boxers[id] = null
-      else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
-               _.include(boxer.runtimes, runtime))
-        availableBoxer = boxer
+        @boxers[id] = null
+      else if ignoreRuntime || _.include(boxer.runtimes, runtime)
+        if parseInt(boxer.freeMemory) > parseInt(memory)
+          availableBoxer = boxer
 
     availableBoxer

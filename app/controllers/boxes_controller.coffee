@@ -11,7 +11,8 @@ module.exports = class BoxesController extends ApplicationController
 
     boxer = boxerListener.chooseBoxer @params.box.runtime,
                                       @params.box.memory,
-                                      @params.box.disk_space
+                                      @params.box.disk_space,
+                                      !!@params.box.snapshot_url
 
     attributes =
                 name: @params.box.name

@@ -11,7 +11,8 @@ module.exports = class BoxesController extends ApplicationController
 
     boxer = boxerListener.chooseBoxer @params.box.runtime,
                                       @params.box.memory,
-                                      @params.box.disk_space
+                                      @params.box.disk_space,
+                                      !!@params.box.snapshot_url
 
     attributes =
                 name: @params.box.name
@@ -29,7 +30,7 @@ module.exports = class BoxesController extends ApplicationController
 
     if boxer?
       attributes['id'] = boxer.id
-      console.log "Box ID: #{attributes.boxId}"
+      logger.info "Box ID: #{attributes.boxId}"
       this._renderResult(protocol.CreateMessage, attributes)
     else
       @response.send 404, JSON.stringify("status":"MISSING")
@@ -75,6 +76,33 @@ module.exports = class BoxesController extends ApplicationController
         attributes.data = @params.box.data
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
+
+  snapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+      snapshotName: @params.snapshot_name
+    this._renderResult(protocol.SnapshotMessage, this._mergeReturnVars(attributes))
+
+  restore_snapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+      snapshotUrl: @params.snapshot_url
+    this._renderResult(protocol.RestoreSnapshotMessage, this._mergeReturnVars(attributes))
+
+  deleteSnapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+      snapshotUrl: @params.snapshot_url
+    this._renderResult(protocol.DeleteSnapshotMessage, this._mergeReturnVars(attributes))
+
+  archive: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+    this._renderResult protocol.ArchiveMessage, this._mergeReturnVars(attributes)
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)

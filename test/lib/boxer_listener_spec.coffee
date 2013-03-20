@@ -7,11 +7,28 @@ describe 'BoxerListener', ->
     boxerListener = null
     beforeEach ->
       boxerListener = new BoxerListener(settings)
-      sinon.stub Date.prototype, 'valueOf', ->
-        return 1347606908660
+      sinon.stub Date.prototype, 'valueOf', -> 1347606908660
 
     afterEach ->
       Date.prototype.valueOf.restore()
+
+    context 'when the box is runtime-independent', ->
+      boxer1 = boxer2 = null
+
+      beforeEach ->
+        boxer1 = newBoxer('boxer-1', ['ruby', 'php', 'python'], 2048, new Date().valueOf() - (1 * 1000))
+        boxer2 = newBoxer('boxer-2', ['ruby', 'php', 'python'], 128, new Date().valueOf() - (2 * 1000))
+        boxerListener.boxers[boxer1.id] = boxer1
+        boxerListener.boxers[boxer2.id] = boxer2
+
+      it 'only checks for memory', ->
+        # Since we are randomly picking one from the eligible list,
+        # we are only checking if it is picked from the list
+        availableBoxer = boxerListener.chooseBoxer(undefined, 256, 100, true)
+        expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
+        delete boxerListener.boxers[boxer1.id]
+        availableBoxer = boxerListener.chooseBoxer(undefined, 256, 100, true)
+        expect(availableBoxer).to.be.null
 
     context 'when only one boxer is available', ->
       boxer1 = null
@@ -21,7 +38,6 @@ describe 'BoxerListener', ->
                           ['ruby', 'php', 'python'],
                           2048,
                           new Date().valueOf() - 1)
-
         boxerListener.boxers[boxer1.id] = boxer1
 
       it 'should return the only boxer available', ->

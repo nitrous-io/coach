@@ -81,6 +81,27 @@ describe 'BoxesController', ->
               assertStatus res, "OK"
               assertCode res, 202
 
+      context 'when we want to clone a snapshot without specifying runtime', ->
+        it 'ignores the runtime when select boxer', (done) ->
+          assertMessage = (channel, rawMessage) ->
+            expect(boxerListener.chooseBoxer.callCount).to.eq 1
+            expect(boxerListener.chooseBoxer.calledWith(undefined, '256', '2048', true)).to.be.true
+            done()
+
+          subscribeAndDo ->
+            boxer.on 'message', assertMessage
+            post('/boxes', {'box': {
+              'name':'mclovin',
+              'id':'1',
+              'snapshot_url':'snapshot_url',
+              'memory':'256',
+              'disk_space':'2048',
+              'public_keys':'["public-key-1","public-key-2"]',''}})
+              .end (err, res) ->
+                assertStatus res, "OK"
+                assertCode res, 202
+            
+
     context 'boxer is present (invalid params)', ->
       beforeEach ->
         sinon.stub(boxerListener, 'chooseBoxer').returns id: 'boxer-id'
@@ -274,3 +295,111 @@ describe 'BoxesController', ->
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202
+
+  describe 'PUT snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.returnVars.snapshot_id).to.eql 123
+        expect(parsedMessage.snapshotName).to.eql 'mclovin-snapshot'
+        expect(parsedMessage.type).to.eql 'aio:snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/snapshot',
+          {
+            'box': {'boxer_id':'boxer-id'},
+            'return_vars': JSON.stringify({ 'snapshot_id': 123 }),
+            'snapshot_name': 'mclovin-snapshot'
+          }
+        ).end (err, res) ->
+          assertStatus res, "OK"
+          assertCode res, 202
+
+  describe 'PUT restore_snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.returnVars.snapshot_id).to.eql 123
+        expect(parsedMessage.snapshotUrl).to.eql 'snapshotUrl'
+        expect(parsedMessage.type).to.eql 'aio:restore_snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/restore_snapshot',
+          {
+            'box': {'boxer_id':'boxer-id'},
+            'return_vars': JSON.stringify({ 'snapshot_id': 123 }),
+            'snapshot_url': 'snapshotUrl'
+          }
+        ).end (err, res) ->
+          assertStatus res, "OK"
+          assertCode res, 202
+
+  describe 'PUT delete_snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.returnVars.snapshot_id).to.eql 123
+        expect(parsedMessage.snapshotUrl).to.eql 'snapshotUrl'
+        expect(parsedMessage.type).to.eql 'aio:delete_snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/delete_snapshot',
+          {
+            'box': {'boxer_id':'boxer-id'},
+            'return_vars': JSON.stringify({ 'snapshot_id': 123 }),
+            'snapshot_url': 'snapshotUrl'
+          }
+        ).end (err, res) ->
+          assertStatus res, "OK"
+          assertCode res, 202
+
+  describe 'PUT archive', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.type).to.eql 'aio:archive'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/archive',
+          {
+            'box': {'boxer_id':'boxer-id'}
+          }
+        ).end (err, res) ->
+          assertStatus res, "OK"
+          assertCode res, 202

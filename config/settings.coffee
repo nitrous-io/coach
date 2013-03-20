@@ -22,7 +22,7 @@ settings =
       host: '0.0.0.0'
       port: 6379
       password: null
-      database: 0
+      database: 1
     webhookHost: 'http://127.0.0.1:3306'
     webhookUsername: 'aio'
     webhookPassword: 'foobar'

@@ -20,7 +20,7 @@ settings =
   test:
     redisMQ:
       host: '0.0.0.0'
-      port: 6379
+      port: 65000
       password: null
       database: 0
     webhookHost: 'http://127.0.0.1:3306'

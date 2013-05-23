@@ -31,7 +31,9 @@ module.exports = class ActionWebhook
              .send(payload: message.encode())
              .auth(settings.webhookUsername, settings.webhookPassword)
              .end (err, res) ->
-               if res.status != 200
+               # If there is no err but res.status returns something other than 200
+               # then it's an error and there needs to be a retry
+               if !err && res.status != 200
                  err = new Error("Error Thrown for #{url}: #{res.status}")
 
                if operation.retry(err)

@@ -9,7 +9,7 @@
     "coffee-script"  : "1.6.x"
   , "underscore"     : "1.4.x"
   , "express"        : "3.2.x"
-  , "redis"          : "git+ssh://git@github.com:action-io/node_redis.git#0bb881cd0173cc8cbdab756f6719515a18387267"
+  , "redis"          : "git+ssh://git@github.com:action-io/node_redis.git#47c63c76d6295f9313adb76da5cafcf77ccfa998"
   , "superagent"     : "0.14.x"
   , "winston"        : "0.7.x"
   , "retry"          : "0.6.x"

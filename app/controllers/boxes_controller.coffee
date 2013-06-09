@@ -1,9 +1,8 @@
-protocol = require '../protocol'
-settings = require '../../config/settings'
-logger = require '../lib/logger'
+protocol              = require '../protocol'
+settings              = require '../../config/settings'
 ApplicationController = require './application_controller'
-initRedisClientWith = require('../lib/utils').initRedisClientWith
-publisher = initRedisClientWith(settings.redisMQ)
+initRedisClientWith   = require('../lib/utils').initRedisClientWith
+publisher             = initRedisClientWith(settings.redisMQ)
 
 module.exports = class BoxesController extends ApplicationController
   create: ->
@@ -25,7 +24,7 @@ module.exports = class BoxesController extends ApplicationController
       try
         attributes.publicKeys = JSON.parse(@params.box.public_keys)
       catch error
-        logger.error "Error in Parsing Public Keys: #{error}"
+        console.log "Error in Parsing Public Keys: #{error}"
 
     if boxer?
       attributes['id'] = boxer.id
@@ -70,7 +69,7 @@ module.exports = class BoxesController extends ApplicationController
         try
           attributes.data = JSON.parse @params.box.data
         catch error
-          logger.error "Error in Parsing Configuration Data: #{error}"
+          console.log "Error in Parsing Configuration Data: #{error}"
       else
         attributes.data = @params.box.data
 
@@ -95,6 +94,6 @@ module.exports = class BoxesController extends ApplicationController
         parsedReturnVars = JSON.parse(@params.return_vars)
         attributes.returnVars = parsedReturnVars
       catch error
-        logger.error "Error in parsing return vars: #{error}"
+        console.log "Error in parsing return vars: #{error}"
 
     attributes

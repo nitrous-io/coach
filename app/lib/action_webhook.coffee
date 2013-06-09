@@ -1,7 +1,6 @@
 request = require 'superagent'
 retry = require 'retry'
 settings = require '../../config/settings'
-logger = require './logger'
 
 module.exports = class ActionWebhook
   # The amount of time before starting the first retry
@@ -25,7 +24,7 @@ module.exports = class ActionWebhook
 
     operation.attempt (currentAttempt) ->
       url = "#{settings.webhookHost}/boxes/#{message.boxId}/webhook"
-      logger.info "Sending #{message} to #{url}"
+      console.log "Sent to #{url} ", message
 
       request.put(url)
              .send(payload: message.encode())

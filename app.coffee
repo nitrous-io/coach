@@ -3,7 +3,6 @@ process.title = "coach"
 
 _                   = require 'underscore'
 settings            = require './config/settings'
-logger              = require './app/lib/logger'
 BoxerListener       = require './app/lib/boxer_listener'
 Ping                = require 'ping'
 initRedisClientWith = require('./app/lib/utils').initRedisClientWith

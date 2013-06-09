@@ -1,9 +1,8 @@
-MessageParser = require './message_parser'
-ActionWebhook = require './action_webhook'
-protocol = require '../protocol'
-logger = require './logger'
+MessageParser       = require './message_parser'
+ActionWebhook       = require './action_webhook'
+protocol            = require '../protocol'
 initRedisClientWith = require('./utils').initRedisClientWith
-_ = require 'underscore'
+_                   = require 'underscore'
 
 class Boxer
   @EXPIRY_TIME = 10 * 1000 # 10 seconds
@@ -37,13 +36,13 @@ module.exports = class BoxerListener
         boxer.runtimes = message.runtimes
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
-        logger.info "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
+        console.log "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.RestartedMessage.type ||
             message.type == protocol.DestroyedMessage.type
-      logger.info "Received Message Type: #{message.type}"
+      console.log "Received Message Type: #{message.type}"
       # Send a notification to Pusher
       # Call the web hook in action.io which updates the status of the box
       boxId = message.boxId
@@ -57,14 +56,14 @@ module.exports = class BoxerListener
     self = this
     availableBoxer = null
 
-    logger.info "Available Boxer IDs: #{availableBoxerIds}"
+    console.log "Available Boxer IDs: #{availableBoxerIds}"
 
     _.each availableBoxerIds, (id) ->
       boxer = self.boxers[id]
-      logger.info "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
+      console.log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
-        logger.info "Error: Expired Boxer: #{id}, deleting"
+        console.log "Error: Expired Boxer: #{id}, deleting"
         self.boxers[id] = null
       else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
                _.include(boxer.runtimes, runtime))

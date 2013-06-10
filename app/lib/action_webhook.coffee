@@ -4,11 +4,11 @@ settings = require '../../config/settings'
 
 module.exports = class ActionWebhook
   # The amount of time before starting the first retry
-  @MIN_TIMEOUT = 2 * 1000
+  @MIN_TIMEOUT = 1 * 1000
   # The maximum amount of time between two retries
-  @MAX_TIMEOUT = 60  * 1000
+  @MAX_TIMEOUT = 30  * 1000
   # The maximum amount of times to retry the operation
-  @MAX_RETRIES = 10
+  @MAX_RETRIES = 50
   # The exponential factor to use
   @FACTOR = 2
   # Time between retries is calculated like this:

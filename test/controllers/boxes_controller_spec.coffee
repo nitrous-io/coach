@@ -14,7 +14,7 @@ describe 'BoxesController', ->
 
   # utility to help send request to the app
   makeRequest = (method, path) -> request(app)[method](path).auth('aio', 'foobar')
-  get = (path) -> makeRequest('get', path)
+  get = (path, data) -> makeRequest('get', path).send(data)
   put = (path, data) -> makeRequest('put', path).send(data)
   post = (path, data) -> makeRequest('post', path).send(data)
   del = (path) -> makeRequest('delete', path)
@@ -295,6 +295,27 @@ describe 'BoxesController', ->
         boxer.on 'message', assertMessage
 
         put('/boxes/mclovin/destroy', {'box': {'boxer_id':'boxer-id'}})
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202
+
+  describe 'GET show', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.type).to.eql 'aio:info_request'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        get('/boxes/mclovin', {'box': {'boxer_id':'boxer-id'}})
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202

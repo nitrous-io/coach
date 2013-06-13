@@ -33,6 +33,12 @@ module.exports = class BoxesController extends ApplicationController
     else
       @response.send 404, JSON.stringify("status":"MISSING")
 
+  show: ->
+    attributes =
+                name: @params.name
+                id: @params.box.boxer_id
+
+    this._renderResult(protocol.InfoRequestMessage, this._mergeReturnVars(attributes))
 
   start: ->
     attributes =

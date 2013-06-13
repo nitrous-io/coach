@@ -41,7 +41,8 @@ module.exports = class BoxerListener
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.RestartedMessage.type ||
-            message.type == protocol.DestroyedMessage.type
+            message.type == protocol.DestroyedMessage.type ||
+            message.type == protocol.InfoResponseMessage.type
       console.log "Received Message Type: #{message.type}"
       # Send a notification to Pusher
       # Call the web hook in action.io which updates the status of the box

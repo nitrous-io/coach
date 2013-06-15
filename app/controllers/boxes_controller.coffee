@@ -19,6 +19,8 @@ module.exports = class BoxesController extends ApplicationController
                 memory: @params.box.memory
                 diskSpace: @params.box.disk_space
                 snapshotURL: @params.box.snapshot_url
+                userName: @params.box.user_name
+                userEmail: @params.box.user_email
 
     if @params.box.public_keys?
       try

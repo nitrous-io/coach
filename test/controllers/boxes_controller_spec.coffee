@@ -42,7 +42,7 @@ describe 'BoxesController', ->
         boxerListener.chooseBoxer.restore()
 
       it 'responds with 404', (done) ->
-        post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'}})
+        post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048', 'user_name': 'foo', 'user_email': 'foo@example.com'}})
           .end (err, res) ->
             assertStatus res, "MISSING"
             assertCode res, 404
@@ -63,6 +63,8 @@ describe 'BoxesController', ->
           expect(parsedMessage.runtime).to.eql 'ruby'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'
+          expect(parsedMessage.userName).to.eql 'foo'
+          expect(parsedMessage.userEmail).to.eql 'foo@example.com'
           expect(parsedMessage.type).to.eql 'aio:create'
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
@@ -76,6 +78,8 @@ describe 'BoxesController', ->
             'runtime':'ruby',
             'memory':'256',
             'disk_space':'2048',
+            'user_name':'foo',
+            'user_email':'foo@example.com',
             'public_keys':'["public-key-1","public-key-2"]',''}})
             .end (err, res) ->
               assertStatus res, "OK"
@@ -96,6 +100,8 @@ describe 'BoxesController', ->
           expect(parsedMessage.runtime).to.eql 'ruby'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'
+          expect(parsedMessage.userName).to.eql 'foo'
+          expect(parsedMessage.userEmail).to.eql 'foo@example.com'
           expect(parsedMessage.type).to.eql 'aio:create'
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.publicKeys).to.be.undefined
@@ -103,7 +109,7 @@ describe 'BoxesController', ->
 
         subscribeAndDo ->
           boxer.on 'message', assertMessage
-          post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','public_keys':'abc'}})
+          post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','user_name':'foo','user_email':'foo@example.com','public_keys':'abc'}})
             .end (err, res) ->
               assertStatus res, "OK"
               assertCode res, 202

@@ -49,7 +49,7 @@ module.exports = class BoxerListener
       boxId = message.boxId
       ActionWebhook.sendNotification message, (err) ->
         if err
-          logger.error "Error -> #{err} while sending notification"
+          console.log "Error -> #{err} while sending notification"
 
   chooseBoxer: (runtime, memory) ->
     # Randomize the available boxer (if there is more than one available)

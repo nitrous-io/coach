@@ -19,8 +19,8 @@ settings =
   development: {}
   test:
     redisMQ:
-      host: '0.0.0.0'
-      port: 65000
+      host: process.env.REDIS_HOST
+      port: process.env.REDIS_PORT
       password: null
       database: 0
     webhookHost: 'http://127.0.0.1:3306'

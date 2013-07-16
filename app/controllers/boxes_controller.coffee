@@ -87,6 +87,40 @@ module.exports = class BoxesController extends ApplicationController
       id: @params.box.boxer_id
     this._renderResult protocol.SnapshotMessage, this._mergeReturnVars(attributes)
 
+  migrate: ->
+    boxerListener = require('../../app').boxerListener
+
+    if @params.box.excluded_hosts?
+      excludedHosts = JSON.parse @params.box.excluded_hosts
+    else
+      excludedHosts = []
+
+    boxer = boxerListener.chooseBoxer @params.box.runtime,
+                                      @params.box.memory,
+                                      @params.box.disk_space,
+                                      excluded: excludedHosts
+
+    attributes =
+                name: @params.box.name
+                boxId: @params.box.id
+                runtime: @params.box.runtime
+                memory: @params.box.memory
+                diskSpace: @params.box.disk_space
+                snapshotURL: @params.box.snapshot_url
+                excludedHosts: excludedHosts
+
+    if @params.box.public_keys?
+      try
+        attributes.publicKeys = JSON.parse(@params.box.public_keys)
+      catch error
+        console.log "Error in Parsing Public Keys: #{error}"
+
+    if boxer?
+      attributes['id'] = boxer.id
+      this._renderResult(protocol.MigrateMessage, attributes)
+    else
+      @response.send 404, JSON.stringify("status":"MISSING")
+
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
 

@@ -121,5 +121,27 @@ describe 'BoxerListener', ->
         availableBoxer = boxerListener.chooseBoxer('ruby', 256)
         expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
 
+    context 'when we want to exclude some boxers', ->
+      boxer1 = boxer2 = null
 
+      beforeEach ->
+        boxer1 = newBoxer('boxer-1',
+                          ['ruby', 'php', 'python'],
+                          2048,
+                          new Date().valueOf() - (1 * 1000))
+
+        boxer2 = newBoxer('boxer-2',
+                          ['ruby']
+                          1024,
+                          new Date().valueOf() - (2 * 1000))
+
+        boxerListener.boxers[boxer1.id] = boxer1
+        boxerListener.boxers[boxer2.id] = boxer2
+
+      it 'does not choose from those boxers', ->
+        availableBoxer = boxerListener.chooseBoxer('ruby', 256, 1024, excluded: ['boxer-1'])
+        expect(availableBoxer.id).to.be.eql 'boxer-2'
+
+        availableBoxer = boxerListener.chooseBoxer('ruby', 256, 1024, excluded: ['boxer-1', 'boxer-2'])
+        expect(availableBoxer).to.be.nil
 

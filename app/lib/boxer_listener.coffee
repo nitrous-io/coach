@@ -44,6 +44,7 @@ module.exports = class BoxerListener
             message.type == protocol.DestroyedMessage.type ||
             message.type == protocol.ConfiguredMessage.type ||
             message.type == protocol.SnapshottedMessage.type ||
+            message.type == protocol.MigratedMessage.type ||
             message.type == protocol.InfoResponseMessage.type
       console.log "Received Message Type: #{message.type}"
       # Send a notification to Pusher
@@ -53,9 +54,12 @@ module.exports = class BoxerListener
         if err
           console.log "Error -> #{err} while sending notification"
 
-  chooseBoxer: (runtime, memory) ->
+  chooseBoxer: (runtime, memory, diskSpace, options={}) ->
+    excludedHosts = options['excluded'] || []
     # Randomize the available boxer (if there is more than one available)
     availableBoxerIds = _.shuffle(_.keys(@boxers))
+    # excluded all specified hosts
+    availableBoxerIds = _.difference availableBoxerIds, excludedHosts
     self = this
     availableBoxer = null
 

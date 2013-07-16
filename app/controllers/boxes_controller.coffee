@@ -81,11 +81,11 @@ module.exports = class BoxesController extends ApplicationController
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
 
-  archive: ->
+  snapshot: ->
     attributes =
       name: @params.name
       id: @params.box.boxer_id
-    this._renderResult protocol.ArchiveMessage, this._mergeReturnVars(attributes)
+    this._renderResult protocol.SnapshotMessage, this._mergeReturnVars(attributes)
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)

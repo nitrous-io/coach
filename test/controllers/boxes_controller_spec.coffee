@@ -320,7 +320,7 @@ describe 'BoxesController', ->
             assertStatus res, "OK"
             assertCode res, 202
 
-  describe 'PUT archive', ->
+  describe 'PUT snapshot', ->
     beforeEach (done) ->
       boxer.subscribe settings.boxerChannel, (err, result) ->
         done() if !err
@@ -330,13 +330,13 @@ describe 'BoxesController', ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.name).to.eql 'mclovin'
         expect(parsedMessage.id).to.eql 'boxer-id'
-        expect(parsedMessage.type).to.eql 'aio:archive'
+        expect(parsedMessage.type).to.eql 'aio:snapshot'
         done()
 
       subscribeAndDo ->
         boxer.on 'message', assertMessage
 
-        put('/boxes/mclovin/archive',
+        put('/boxes/mclovin/snapshot',
           {
             'box': {'boxer_id':'boxer-id'}
           }

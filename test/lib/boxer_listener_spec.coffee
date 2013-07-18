@@ -34,8 +34,12 @@ describe 'BoxerListener', ->
 
       context 'when message is migrate:snapshotted', ->
         beforeEach ->
+          sinon.stub(boxerListener, "chooseBoxer").returns(id: "another-boxer")
           message.dataType = 'aio:migrate:snapshotted'
           message.snapshotURL = 's3-url'
+
+        afterEach ->
+          boxerListener.chooseBoxer.restore()
 
         it 'pass the message as aio:migrate:create to boxer', ->
           boxerListener._handle message
@@ -44,6 +48,7 @@ describe 'BoxerListener', ->
           calledMessage = MessageParser.decode args[1]
           expect(channel).to.eql settings.boxerChannel
           expect(calledMessage.dataType).to.eql "aio:migrate:create"
+          expect(calledMessage.id).to.eql "another-boxer"
           expect(calledMessage.snapshotURL).to.eql "s3-url"
 
       context 'when message is migrate:migrated', ->

@@ -41,8 +41,16 @@ module.exports = class BoxerListener
       if message.success
         if message.dataType == "aio:migrate:snapshotted"
           message.dataType = "aio:migrate:create"
-          @publisher.publish @settings.boxerChannel, message.encode(), (err, res) ->
-            console.log "Error -> #{err} while publish to boxer" if err
+          boxer = this.chooseBoxer message.runtime, message.memory,
+            message.diskSpace, excluded: message.excludedHosts
+          if boxer?
+            message.id = boxer.id
+            @publisher.publish @settings.boxerChannel, message.encode(), (err, res) ->
+              console.log "Error -> #{err} while publish to boxer" if err
+          else
+            message.success = false
+            ActionWebhook.sendNotification message, (err) ->
+              console.log "Error -> #{err} while sending notification" if err
         else if message.dataType == "aio:migrate:created"
           createdMessage = new protocol.MigratedMessage({
             id: message.id,

@@ -14,6 +14,7 @@ class Boxer
 module.exports = class BoxerListener
   constructor: (@settings) ->
     @listener = initRedisClientWith(@settings.redisMQ)
+    @publisher = initRedisClientWith(@settings.redisMQ)
     @boxers = {}
 
   run: ->
@@ -26,7 +27,6 @@ module.exports = class BoxerListener
           self._handle(parsedMessage)
 
   _handle: (message) ->
-
     if message.type == protocol.AdvertiseMessage.type
       now = new Date().valueOf()
 
@@ -37,13 +37,35 @@ module.exports = class BoxerListener
       else
         @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
         console.log "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
+    else if message.type == protocol.MigrateMessage.type
+      if message.success
+        if message.dataType == "aio:migrate:snapshotted"
+          message.dataType = "aio:migrate:create"
+          @publisher.publish @settings.boxerChannel, message.encode(), (err, res) ->
+            console.log "Error -> #{err} while publish to boxer" if err
+        else if message.dataType == "aio:migrate:created"
+          createdMessage = new protocol.MigratedMessage({
+            id: message.id,
+            boxId: message.boxId,
+            port: message.port,
+            success: true
+          })
+          ActionWebhook.sendNotification createdMessage, (err) ->
+            console.log "Error -> #{err} while sending notification" if err
+      else
+        failedMessage = new protocol.MigratedMessage({
+          id: message.id,
+          boxId: message.boxId,
+          success: false
+        })
+        ActionWebhook.sendNotification failedMessage, (err) ->
+          console.log "Error -> #{err} while sending notification" if err
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
             message.type == protocol.RestartedMessage.type ||
             message.type == protocol.DestroyedMessage.type ||
             message.type == protocol.ConfiguredMessage.type ||
-            message.type == protocol.SnapshottedMessage.type ||
             message.type == protocol.MigratedMessage.type ||
             message.type == protocol.InfoResponseMessage.type
       console.log "Received Message Type: #{message.type}"

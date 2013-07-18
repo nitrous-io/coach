@@ -320,89 +320,49 @@ describe 'BoxesController', ->
             assertStatus res, "OK"
             assertCode res, 202
 
-  describe 'PUT snapshot', ->
-    beforeEach (done) ->
-      boxer.subscribe settings.boxerChannel, (err, result) ->
-        done() if !err
-
-    it 'responds with 202', (done) ->
+  # this is only supported with goboxer now
+  describe 'PUT migrate', ->
+    it 'sends the snapshot message to boxer', (done) ->
       assertMessage = (channel, rawMessage) ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.boxId).to.eql '1'
+        expect(parsedMessage.runtime).to.eql 'ruby'
+        expect(parsedMessage.memory).to.eql '256'
+        expect(parsedMessage.diskSpace).to.eql '2048'
+        expect(parsedMessage.type).to.eql 'aio:migrate'
+        expect(parsedMessage.dataType).to.eql 'aio:migrate:snapshot'
         expect(parsedMessage.id).to.eql 'boxer-id'
-        expect(parsedMessage.type).to.eql 'aio:snapshot'
+        expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
+        expect(parsedMessage.excludedHosts).to.eql ['boxer-1','boxer-2']
         done()
 
       subscribeAndDo ->
         boxer.on 'message', assertMessage
-
-        put('/boxes/mclovin/snapshot',
-          {
-            'box': {'boxer_id':'boxer-id'}
-          }
-        ).end (err, res) ->
-          assertStatus res, "OK"
-          assertCode res, 202
-
-  describe 'PUT migrate', ->
-    context 'boxer is not present', ->
-      beforeEach -> sinon.stub(boxerListener, 'chooseBoxer').returns null
-      afterEach -> boxerListener.chooseBoxer.restore()
-
-      it 'responds with 404', (done) ->
-        put('/boxes/mclovin-1/migrate', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'}})
+        put('/boxes/mclovin-1/migrate', {'box': {
+          'name':'mclovin',
+          'id':'1',
+          'boxer_id': 'boxer-id',
+          'runtime':'ruby',
+          'memory':'256',
+          'disk_space':'2048',
+          'excluded_hosts': '["boxer-1","boxer-2"]',
+          'public_keys':'["public-key-1","public-key-2"]'}})
           .end (err, res) ->
-            assertStatus res, "MISSING"
-            assertCode res, 404
-            done()
+            assertStatus res, "OK"
+            assertCode res, 202
 
-    context 'boxer is present (valid params)', ->
-      beforeEach -> sinon.stub(boxerListener, 'chooseBoxer').returns id: 'boxer-id'
-      afterEach -> boxerListener.chooseBoxer.restore()
-
-      it 'responds with 202', (done) ->
-        assertMessage = (channel, rawMessage) ->
-          parsedMessage = JSON.parse(rawMessage)
-          excluded = boxerListener.chooseBoxer.lastCall.args[3]['excluded']
-          expect(excluded).to.eql ['boxer-1', 'boxer-2']
-          expect(parsedMessage.name).to.eql 'mclovin'
-          expect(parsedMessage.boxId).to.eql '1'
-          expect(parsedMessage.runtime).to.eql 'ruby'
-          expect(parsedMessage.memory).to.eql '256'
-          expect(parsedMessage.diskSpace).to.eql '2048'
-          expect(parsedMessage.type).to.eql 'aio:migrate'
-          expect(parsedMessage.id).to.eql 'boxer-id'
-          expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
-          expect(parsedMessage.excludedHosts).to.eql ['boxer-1','boxer-2']
-          done()
-
-        subscribeAndDo ->
-          boxer.on 'message', assertMessage
-          put('/boxes/mclovin-1/migrate', {'box': {
-            'name':'mclovin',
-            'id':'1',
-            'runtime':'ruby',
-            'memory':'256',
-            'disk_space':'2048',
-            'excluded_hosts': '["boxer-1","boxer-2"]',
-            'public_keys':'["public-key-1","public-key-2"]'}})
+    context 'when excluded_hosts are empty', ->
+      it 'responds with 404', (done) ->
+        put('/boxes/mclovin-1/migrate', {'box': {
+          'name':'mclovin',
+          'id':'1',
+          'boxer_id': 'boxer-id',
+          'runtime':'ruby',
+          'memory':'256',
+          'disk_space':'2048',
+          'public_keys':'["public-key-1","public-key-2"]'}})
             .end (err, res) ->
-              assertStatus res, "OK"
-              assertCode res, 202
-
-    context 'boxer is present (invalid params)', ->
-      beforeEach -> sinon.stub(boxerListener, 'chooseBoxer').returns id: 'boxer-id'
-      afterEach -> boxerListener.chooseBoxer.restore()
-
-      it 'responds with 202', (done) ->
-        assertMessage = (channel, rawMessage) ->
-          parsedMessage = JSON.parse(rawMessage)
-          expect(parsedMessage.publicKeys).to.be.undefined
-          done()
-
-        subscribeAndDo ->
-          boxer.on 'message', assertMessage
-          put('/boxes/mclovin-1/migrate', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','public_keys':'abc'}})
-            .end (err, res) ->
-              assertStatus res, "OK"
-              assertCode res, 202
+              assertStatus res, "MISSING"
+              assertCode res, 404
+              done()

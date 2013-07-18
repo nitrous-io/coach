@@ -88,19 +88,17 @@ module.exports = class BoxesController extends ApplicationController
     this._renderResult protocol.SnapshotMessage, this._mergeReturnVars(attributes)
 
   migrate: ->
-    boxerListener = require('../../app').boxerListener
-
     if @params.box.excluded_hosts?
-      excludedHosts = JSON.parse @params.box.excluded_hosts
+      try
+        # make sure that this is an array
+        excludedHosts = [].concat JSON.parse(@params.box.excluded_hosts)
+      catch error
+        @response.send 404, JSON.stringify("status":"MISSING")
     else
-      excludedHosts = []
-
-    boxer = boxerListener.chooseBoxer @params.box.runtime,
-                                      @params.box.memory,
-                                      @params.box.disk_space,
-                                      excluded: excludedHosts
+      @response.send 404, JSON.stringify("status":"MISSING")
 
     attributes =
+                id: @params.box.boxer_id
                 name: @params.box.name
                 boxId: @params.box.id
                 runtime: @params.box.runtime
@@ -108,6 +106,7 @@ module.exports = class BoxesController extends ApplicationController
                 diskSpace: @params.box.disk_space
                 snapshotURL: @params.box.snapshot_url
                 excludedHosts: excludedHosts
+                dataType: "aio:migrate:snapshot"
 
     if @params.box.public_keys?
       try
@@ -115,11 +114,7 @@ module.exports = class BoxesController extends ApplicationController
       catch error
         console.log "Error in Parsing Public Keys: #{error}"
 
-    if boxer?
-      attributes['id'] = boxer.id
-      this._renderResult(protocol.MigrateMessage, attributes)
-    else
-      @response.send 404, JSON.stringify("status":"MISSING")
+    this._renderResult(protocol.MigrateMessage, attributes)
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)

@@ -319,3 +319,50 @@ describe 'BoxesController', ->
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202
+
+  # this is only supported with goboxer now
+  describe 'PUT migrate', ->
+    it 'sends the snapshot message to boxer', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.boxId).to.eql '1'
+        expect(parsedMessage.runtime).to.eql 'ruby'
+        expect(parsedMessage.memory).to.eql '256'
+        expect(parsedMessage.diskSpace).to.eql '2048'
+        expect(parsedMessage.type).to.eql 'aio:migrate'
+        expect(parsedMessage.dataType).to.eql 'aio:migrate:snapshot'
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
+        expect(parsedMessage.excludedHosts).to.eql ['boxer-1','boxer-2']
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+        put('/boxes/mclovin-1/migrate', {'box': {
+          'name':'mclovin',
+          'id':'1',
+          'boxer_id': 'boxer-id',
+          'runtime':'ruby',
+          'memory':'256',
+          'disk_space':'2048',
+          'excluded_hosts': '["boxer-1","boxer-2"]',
+          'public_keys':'["public-key-1","public-key-2"]'}})
+          .end (err, res) ->
+            assertStatus res, "OK"
+            assertCode res, 202
+
+    context 'when excluded_hosts are empty', ->
+      it 'responds with 404', (done) ->
+        put('/boxes/mclovin-1/migrate', {'box': {
+          'name':'mclovin',
+          'id':'1',
+          'boxer_id': 'boxer-id',
+          'runtime':'ruby',
+          'memory':'256',
+          'disk_space':'2048',
+          'public_keys':'["public-key-1","public-key-2"]'}})
+            .end (err, res) ->
+              assertStatus res, "MISSING"
+              assertCode res, 404
+              done()

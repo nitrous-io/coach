@@ -7,5 +7,6 @@ module.exports = (app) ->
   app.put    '/boxes/:name/stop',     to c.BoxesController, 'stop'
   app.put    '/boxes/:name/restart',  to c.BoxesController, 'restart'
   app.put    '/boxes/:name/destroy',  to c.BoxesController, 'destroy'
+  app.put    '/boxes/:name/migrate',  to c.BoxesController, 'migrate'
   app.put    '/boxes/:name',          to c.BoxesController, 'update'
   app.get    '/boxes/:name',          to c.BoxesController, 'show'

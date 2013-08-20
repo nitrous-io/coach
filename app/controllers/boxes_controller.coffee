@@ -81,6 +81,41 @@ module.exports = class BoxesController extends ApplicationController
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
 
+  snapshot: ->
+    attributes =
+      name: @params.name
+      id: @params.box.boxer_id
+    this._renderResult protocol.SnapshotMessage, this._mergeReturnVars(attributes)
+
+  migrate: ->
+    if @params.box.excluded_hosts?
+      try
+        # make sure that this is an array
+        excludedHosts = [].concat JSON.parse(@params.box.excluded_hosts)
+      catch error
+        @response.send 404, JSON.stringify("status":"MISSING")
+    else
+      @response.send 404, JSON.stringify("status":"MISSING")
+
+    attributes =
+                id: @params.box.boxer_id
+                name: @params.box.name
+                boxId: @params.box.id
+                runtime: @params.box.runtime
+                memory: @params.box.memory
+                diskSpace: @params.box.disk_space
+                snapshotURL: @params.box.snapshot_url
+                excludedHosts: excludedHosts
+                dataType: "aio:migrate:snapshot"
+
+    if @params.box.public_keys?
+      try
+        attributes.publicKeys = JSON.parse(@params.box.public_keys)
+      catch error
+        console.log "Error in Parsing Public Keys: #{error}"
+
+    this._renderResult(protocol.MigrateMessage, attributes)
+
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)
 

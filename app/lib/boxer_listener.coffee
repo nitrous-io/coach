@@ -43,6 +43,7 @@ module.exports = class BoxerListener
             message.type == protocol.RestartedMessage.type ||
             message.type == protocol.DestroyedMessage.type ||
             message.type == protocol.ConfiguredMessage.type ||
+            message.type == protocol.MigratedMessage.type ||
             message.type == protocol.InfoResponseMessage.type
       console.log "Received Message Type: #{message.type}"
       # Send a notification to Pusher

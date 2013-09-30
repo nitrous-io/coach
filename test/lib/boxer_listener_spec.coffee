@@ -1,17 +1,47 @@
 BoxerListener = require '../../app/lib/boxer_listener'
+ActionWebhook = require '../../app/lib/action_webhook'
+MessageParser = require '../../app/lib/message_parser'
 settings = require '../../config/settings'
+protocol = require '../../app/protocol'
 _ = require 'underscore'
 
 describe 'BoxerListener', ->
-  describe 'chooseBoxer', ->
-    boxerListener = null
-    beforeEach ->
-      boxerListener = new BoxerListener(settings)
-      sinon.stub Date.prototype, 'valueOf', ->
-        return 1347606908660
+  boxerListener = null
+  beforeEach -> boxerListener = new BoxerListener(settings)
 
-    afterEach ->
-      Date.prototype.valueOf.restore()
+  describe '#_handle', ->
+    message = null
+
+    context 'when message is a migrated message', ->
+      beforeEach ->
+        message = new protocol.MigratedMessage(success: true)
+        message.type = "aio:migrated"
+        sinon.stub ActionWebhook, "sendNotification"
+
+      afterEach ->
+        ActionWebhook.sendNotification.restore()
+
+      context 'when message is not success', ->
+        beforeEach -> message.success = false
+
+        it 'sends a failed aio:migrated to the webhook', ->
+          boxerListener._handle message
+          calledMessage = ActionWebhook.sendNotification.lastCall.args[0]
+          expect(calledMessage.type).to.eql "aio:migrated"
+          expect(calledMessage.success).to.be.false
+
+      context 'when message is success', ->
+        beforeEach -> message.success = true
+
+        it 'sends a success aio:migrated to the webhook', ->
+          boxerListener._handle message
+          calledMessage = ActionWebhook.sendNotification.lastCall.args[0]
+          expect(calledMessage.type).to.eql "aio:migrated"
+          expect(calledMessage.success).to.be.true
+
+  describe 'chooseBoxer', ->
+    beforeEach -> sinon.stub Date.prototype, 'valueOf', -> 1347606908660
+    afterEach -> Date.prototype.valueOf.restore()
 
     context 'when only one boxer is available', ->
       boxer1 = null

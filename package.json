@@ -17,7 +17,7 @@
   , "ping"          : "git+ssh://git@github.com:action-io/ping.git#309a3b327a2095b082cefe39cd8953fd12a9b5b1"
   }
 , "devDependencies": {
-    "mocha"        : "1.10.x"
+    "mocha"        : "1.13.x"
   , "sinon"        : "1.7.x"
   , "chai"         : "1.6.x"
   , "sinon-chai"   : "2.4.x"

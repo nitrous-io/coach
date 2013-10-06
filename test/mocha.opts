@@ -2,5 +2,4 @@
 --reporter dot
 --timeout 1000
 --ui bdd
--G
-
+--growl

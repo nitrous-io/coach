@@ -227,6 +227,7 @@ describe 'BoxesController', ->
 
         subscribeAndDo ->
           boxer.on 'message', assertMessage
+
           put('/boxes/mclovin', {
             'box': {
               'boxer_id':'boxer-id',
@@ -234,6 +235,28 @@ describe 'BoxesController', ->
               'data': JSON.stringify({'memory': '512M', 'diskSpace': '2G'})
             },
             'return_vars': JSON.stringify({'addon_id':1})})
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
+
+
+    context 'update auth', ->
+      it 'responds with 202', (done) ->
+        assertMessage = (channel, rawMessage) ->
+          parsedMessage = JSON.parse(rawMessage)
+          expect(parsedMessage.name).to.eql 'mclovin'
+          expect(parsedMessage.id).to.eql 'boxer-id'
+          expect(parsedMessage.type).to.eql 'aio:configure'
+          expect(parsedMessage.dataType).to.eql 'aio:configure:update_auth'
+          expect(parsedMessage.data).to.eql {'auth_username': 'admin', 'auth_password': 'password'}
+          done()
+
+        subscribeAndDo ->
+          boxer.on 'message', assertMessage
+          put('/boxes/mclovin', {'box': {
+            'boxer_id':'boxer-id',
+            'data_type': 'aio:configure:update_auth',
+            'data': JSON.stringify({'auth_username': 'admin', 'auth_password': 'password'})}})
             .end (err, res) ->
               assertStatus res, "OK"
               assertCode res, 202

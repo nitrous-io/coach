@@ -42,7 +42,7 @@ describe 'BoxesController', ->
         boxerListener.chooseBoxer.restore()
 
       it 'responds with 404', (done) ->
-        post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048'}})
+        post('/boxes', {'box': {'name':'mclovin','id':'1','runtime':'ruby','memory':'256','disk_space':'2048','virtual_memory':'256','cpu_shares':'512'}})
           .end (err, res) ->
             assertStatus res, "MISSING"
             assertCode res, 404
@@ -63,6 +63,8 @@ describe 'BoxesController', ->
           expect(parsedMessage.runtime).to.eql 'ruby'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'
+          expect(parsedMessage.virtualMemory).to.eql '512'
+          expect(parsedMessage.cpuShares).to.eql '1024'
           expect(parsedMessage.type).to.eql 'aio:create'
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
@@ -76,6 +78,8 @@ describe 'BoxesController', ->
             'runtime':'ruby',
             'memory':'256',
             'disk_space':'2048',
+            'virtual_memory':'512',
+            'cpu_shares':'1024',
             'public_keys':'["public-key-1","public-key-2"]',''}})
             .end (err, res) ->
               assertStatus res, "OK"
@@ -222,7 +226,7 @@ describe 'BoxesController', ->
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.type).to.eql 'aio:configure'
           expect(parsedMessage.dataType).to.eql 'aio:configure:change_specs'
-          expect(parsedMessage.data).to.eql {'memory': '512M', 'diskSpace': '2G'}
+          expect(parsedMessage.data).to.eql {'memory': '512M', 'diskSpace': '2G', 'virtualMemory': '512M'}
           done()
 
         subscribeAndDo ->
@@ -232,7 +236,7 @@ describe 'BoxesController', ->
             'box': {
               'boxer_id':'boxer-id',
               'data_type': 'aio:configure:change_specs',
-              'data': JSON.stringify({'memory': '512M', 'diskSpace': '2G'})
+              'data': JSON.stringify({'memory': '512M', 'diskSpace': '2G', 'virtualMemory': '512M'})
             },
             'return_vars': JSON.stringify({'addon_id':1})})
             .end (err, res) ->

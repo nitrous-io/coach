@@ -21,6 +21,7 @@ module.exports = class BoxesController extends ApplicationController
                 virtualMemory: @params.box.virtual_memory
                 cpuShares: @params.box.cpu_shares
                 snapshotURL: @params.box.snapshot_url
+                premium: @params.box.premium
 
     if @params.box.public_keys?
       try
@@ -73,7 +74,7 @@ module.exports = class BoxesController extends ApplicationController
                 dataType: @params.box.data_type
 
     switch attributes.dataType
-      when 'aio:configure:remove_env_variables', 'aio:configure:set_env_variables', 'aio:configure:change_specs', 'aio:configure:update_auth'
+      when 'aio:configure:remove_env_variables', 'aio:configure:set_env_variables', 'aio:configure:change_specs', 'aio:configure:update_auth', 'aio:configure:update_premium'
         try
           attributes.data = JSON.parse @params.box.data
         catch error

@@ -18,6 +18,8 @@ module.exports = class BoxesController extends ApplicationController
                 runtime: @params.box.runtime
                 memory: @params.box.memory
                 diskSpace: @params.box.disk_space
+                virtualMemory: @params.box.virtual_memory
+                cpuShares: @params.box.cpu_shares
                 snapshotURL: @params.box.snapshot_url
 
     if @params.box.public_keys?

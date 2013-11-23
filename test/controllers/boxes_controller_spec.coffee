@@ -243,6 +243,31 @@ describe 'BoxesController', ->
               assertStatus res, "OK"
               assertCode res, 202
 
+    context 'soft reconfiguring box specs', ->
+      it 'responds with 202', (done) ->
+        assertMessage = (channel, rawMessage) ->
+          parsedMessage = JSON.parse(rawMessage)
+          expect(parsedMessage.name).to.eql 'mclovin'
+          expect(parsedMessage.id).to.eql 'boxer-id'
+          expect(parsedMessage.type).to.eql 'aio:configure'
+          expect(parsedMessage.dataType).to.eql 'aio:configure:soft_reconfigure'
+          expect(parsedMessage.data).to.eql {'memory': '512M', 'virtualMemory': '512M', 'cpuShares': '1024'}
+          done()
+
+        subscribeAndDo ->
+          boxer.on 'message', assertMessage
+
+          put('/boxes/mclovin', {
+            'box': {
+              'boxer_id':'boxer-id',
+              'data_type': 'aio:configure:soft_reconfigure',
+              'data': JSON.stringify({'memory': '512M', 'virtualMemory': '512M', 'cpuShares': '1024'})
+            },
+            'return_vars': JSON.stringify({'addon_id':1})})
+            .end (err, res) ->
+              assertStatus res, 'OK'
+              assertCode res, 202
+
     context 'update auth', ->
       it 'responds with 202', (done) ->
         assertMessage = (channel, rawMessage) ->

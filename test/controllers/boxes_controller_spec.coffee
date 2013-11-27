@@ -123,11 +123,16 @@ describe 'BoxesController', ->
         expect(parsedMessage.name).to.eql 'mclovin'
         expect(parsedMessage.id).to.eql 'boxer-id'
         expect(parsedMessage.type).to.eql 'aio:start'
+        expect(parsedMessage.data).to.eql {'memory': '1024M', 'diskSpace': '1000M', 'virtualMemory': '2048M', 'cpuShares': 512}
         done()
 
       subscribeAndDo ->
         boxer.on 'message', assertMessage
-        put('/boxes/mclovin/start', {'box': {'boxer_id':'boxer-id'}})
+        put('/boxes/mclovin/start', {
+          'box': {
+            'boxer_id': 'boxer-id',
+            'data': JSON.stringify({'memory': '1024M', 'diskSpace': '1000M', 'virtualMemory': '2048M', 'cpuShares': 512})
+          }})
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202
@@ -316,11 +321,16 @@ describe 'BoxesController', ->
         expect(parsedMessage.name).to.eql 'mclovin'
         expect(parsedMessage.id).to.eql 'boxer-id'
         expect(parsedMessage.type).to.eql 'aio:restart'
+        expect(parsedMessage.data).to.eql {'memory': '1024M', 'diskSpace': '1000M', 'virtualMemory': '2048M', 'cpuShares': 512}
         done()
 
       subscribeAndDo ->
         boxer.on 'message', assertMessage
-        put('/boxes/mclovin/restart', {'box': {'boxer_id':'boxer-id'}})
+        put('/boxes/mclovin/restart', {
+          'box': {
+            'boxer_id':'boxer-id',
+            'data': JSON.stringify({'memory': '1024M', 'diskSpace': '1000M', 'virtualMemory': '2048M', 'cpuShares': 512})
+          }})
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202

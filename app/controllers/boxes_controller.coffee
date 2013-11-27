@@ -47,6 +47,11 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
+    try
+      attributes.data = JSON.parse @params.box.data
+    catch error
+      console.log "Error in Parsing Configuration Data: #{error}"
+
     this._renderResult(protocol.StartMessage, this._mergeReturnVars(attributes))
 
   stop: ->
@@ -59,6 +64,11 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
+    try
+      attributes.data = JSON.parse @params.box.data
+    catch error
+      console.log "Error in Parsing Configuration Data: #{error}"
+
     this._renderResult(protocol.RestartMessage, this._mergeReturnVars(attributes))
 
   destroy: ->

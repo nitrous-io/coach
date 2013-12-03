@@ -14,12 +14,12 @@ module.exports = class BoxesController extends ApplicationController
 
     attributes =
                 name: @params.box.name
-                boxId: @params.box.id
+                boxId: +@params.box.id
                 runtime: @params.box.runtime
                 memory: @params.box.memory
                 diskSpace: @params.box.disk_space
                 virtualMemory: @params.box.virtual_memory
-                cpuShares: @params.box.cpu_shares
+                cpuShares: +@params.box.cpu_shares
                 snapshotURL: @params.box.snapshot_url
                 premium: @params.box.premium
 

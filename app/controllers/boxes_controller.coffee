@@ -47,6 +47,7 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
+                publicKeys: @params.box.public_keys
     try
       attributes.data = JSON.parse @params.box.data
     catch error

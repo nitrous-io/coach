@@ -59,12 +59,12 @@ describe 'BoxesController', ->
         assertMessage = (channel, rawMessage) ->
           parsedMessage = JSON.parse(rawMessage)
           expect(parsedMessage.name).to.eql 'mclovin'
-          expect(parsedMessage.boxId).to.eql '1'
+          expect(parsedMessage.boxId).to.eql 1
           expect(parsedMessage.runtime).to.eql 'ruby'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'
           expect(parsedMessage.virtualMemory).to.eql '512'
-          expect(parsedMessage.cpuShares).to.eql '1024'
+          expect(parsedMessage.cpuShares).to.eql 1024
           expect(parsedMessage.type).to.eql 'aio:create'
           expect(parsedMessage.id).to.eql 'boxer-id'
           expect(parsedMessage.publicKeys).to.eql ['public-key-1','public-key-2']
@@ -96,7 +96,7 @@ describe 'BoxesController', ->
         assertMessage = (channel, rawMessage) ->
           parsedMessage = JSON.parse(rawMessage)
           expect(parsedMessage.name).to.eql 'mclovin'
-          expect(parsedMessage.boxId).to.eql '1'
+          expect(parsedMessage.boxId).to.eql 1
           expect(parsedMessage.runtime).to.eql 'ruby'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'

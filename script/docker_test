@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Get absolute path to script
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=$(dirname $SCRIPT)
+
+/etc/init.d/redis-server start
+
+cd $SCRIPTPATH/.. && cp .env-example .env
+cd $SCRIPTPATH/.. && make test

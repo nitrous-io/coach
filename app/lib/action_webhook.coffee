@@ -1,6 +1,7 @@
 request = require 'superagent'
 retry = require 'retry'
 settings = require '../../config/settings'
+log = require './log'
 
 module.exports = class ActionWebhook
   # The amount of time before starting the first retry
@@ -23,17 +24,19 @@ module.exports = class ActionWebhook
                                 maxTimeout: @MAX_TIMEOUT
 
     operation.attempt (currentAttempt) ->
+      encodedMessage = message.encode()
       url = "#{settings.webhookHost}/boxes/#{message.boxId}/webhook"
-      console.log "Sent to #{url} ", message
+      log "Sent to #{url} ", encodedMessage
 
       request.put(url)
-             .send(payload: message.encode())
+             .send(payload: encodedMessage)
              .auth(settings.webhookUsername, settings.webhookPassword)
              .end (err, res) ->
                # If there is no err but res.status returns something other than 200
                # then it's an error and there needs to be a retry
                if !err && res.status != 200
                  err = new Error("Error Thrown for #{url}: #{res.status}")
+                 log err
 
                if operation.retry(err)
                  return

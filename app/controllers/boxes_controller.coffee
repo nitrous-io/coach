@@ -3,6 +3,7 @@ settings              = require '../../config/settings'
 ApplicationController = require './application_controller'
 initRedisClientWith   = require('../lib/utils').initRedisClientWith
 publisher             = initRedisClientWith(settings.redisMQ)
+log                   = require('../lib/log')
 
 module.exports = class BoxesController extends ApplicationController
   create: ->
@@ -27,11 +28,11 @@ module.exports = class BoxesController extends ApplicationController
       try
         attributes.publicKeys = JSON.parse(@params.box.public_keys)
       catch error
-        console.log "Error in Parsing Public Keys: #{error}"
+        log "Error in Parsing Public Keys: #{error}"
 
     if boxer?
       attributes['id'] = boxer.id
-      console.log "Box ID: #{attributes.boxId}"
+      log "Box ID: #{attributes.boxId}"
       this._renderResult(protocol.CreateMessage, attributes)
     else
       @response.send 404, JSON.stringify("status":"MISSING")
@@ -51,7 +52,7 @@ module.exports = class BoxesController extends ApplicationController
     try
       attributes.data = JSON.parse @params.box.data
     catch error
-      console.log "Error in Parsing Configuration Data: #{error}"
+      log "Error in Parsing Configuration Data: #{error}"
 
     this._renderResult(protocol.StartMessage, this._mergeReturnVars(attributes))
 
@@ -68,7 +69,7 @@ module.exports = class BoxesController extends ApplicationController
     try
       attributes.data = JSON.parse @params.box.data
     catch error
-      console.log "Error in Parsing Configuration Data: #{error}"
+      log "Error in Parsing Configuration Data: #{error}"
 
     this._renderResult(protocol.RestartMessage, this._mergeReturnVars(attributes))
 
@@ -89,7 +90,7 @@ module.exports = class BoxesController extends ApplicationController
         try
           attributes.data = JSON.parse @params.box.data
         catch error
-          console.log "Error in Parsing Configuration Data: #{error}"
+          log "Error in Parsing Configuration Data: #{error}"
       else
         attributes.data = @params.box.data
 
@@ -121,6 +122,6 @@ module.exports = class BoxesController extends ApplicationController
         parsedReturnVars = JSON.parse(@params.return_vars)
         attributes.returnVars = parsedReturnVars
       catch error
-        console.log "Error in parsing return vars: #{error}"
+        log "Error in parsing return vars: #{error}"
 
     attributes

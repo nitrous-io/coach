@@ -6,6 +6,7 @@ settings            = require './config/settings'
 BoxerListener       = require './app/lib/boxer_listener'
 Ping                = require 'ping'
 initRedisClientWith = require('./app/lib/utils').initRedisClientWith
+log                 = require('./app/lib/log')
 
 express = require 'express'
 app = express()
@@ -37,7 +38,7 @@ pingRedisClient = initRedisClientWith(settings.redisMQ)
 if require.main == module || require.main.filename.match /boot\.js/
   server = app.listen(process.env.PORT || 4000)
   unless address = server.address()
-    console.log 'Could not start coach!'
+    log 'Could not start coach!'
     return
 
   # This is a server that will be used by monitoring services (such as Datadog, etc.)
@@ -49,7 +50,7 @@ if require.main == module || require.main.filename.match /boot\.js/
 
   pingServer.start()
 
-  console.log "coach listening on port #{address.port} in #{env} mode"
+  log "coach listening on port #{address.port} in #{env} mode"
 
 module.exports =
                 app: app

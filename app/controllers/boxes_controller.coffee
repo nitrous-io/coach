@@ -96,6 +96,13 @@ module.exports = class BoxesController extends ApplicationController
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
 
+  snapshot: ->
+    attributes =
+                name: @params.name
+                id: @params.box.boxer_id
+                snapshotId: @params.box.snapshot_id
+    this._renderResult(protocol.SnapshotMessage, this._mergeReturnVars(attributes))
+
   migrate: ->
     attributes =
                 name: @params.name

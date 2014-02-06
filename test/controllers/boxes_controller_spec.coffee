@@ -377,6 +377,32 @@ describe 'BoxesController', ->
             assertStatus res, "OK"
             assertCode res, 202
 
+  describe 'PUT snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.type).to.eql 'aio:snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/snapshot', {
+          'box': {
+            'boxer_id': 'boxer-id',
+            'snapshot_id': 123
+          }
+        }).end (err, res) ->
+            assertStatus res, 'OK'
+            assertCode res, 202
+
   # this is only supported with goboxer now
   describe 'PUT migrate', ->
     it 'sends the migrate message to boxer', (done) ->

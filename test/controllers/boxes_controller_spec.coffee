@@ -403,6 +403,30 @@ describe 'BoxesController', ->
             assertStatus res, 'OK'
             assertCode res, 202
 
+  describe 'PUT delete_snapshot', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.type).to.eql 'aio:delete_snapshot'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/snapshots/123/destroy', {
+          'box': {
+            'boxer_id': 'boxer-id'
+          }
+        }).end (err, res) ->
+            assertStatus res, 'OK'
+            assertCode res, 202
+
   # this is only supported with goboxer now
   describe 'PUT migrate', ->
     it 'sends the migrate message to boxer', (done) ->

@@ -11,3 +11,5 @@ module.exports = (app) ->
   app.put    '/boxes/:name/migrate',  to c.BoxesController, 'migrate'
   app.put    '/boxes/:name',          to c.BoxesController, 'update'
   app.get    '/boxes/:name',          to c.BoxesController, 'show'
+
+  app.put    '/snapshots/:snapshotId/destroy', to c.BoxesController, 'deleteSnapshot'

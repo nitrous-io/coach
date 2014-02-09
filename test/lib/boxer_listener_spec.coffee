@@ -106,6 +106,23 @@ describe 'BoxerListener', ->
         expect(availableBoxer.freeMemory).to.eql 1024
         expect(availableBoxer.runtimes).to.eql ['ruby']
 
+    context 'when there is no runtime requirement', ->
+      boxer1 = boxer2 = null
+
+      beforeEach ->
+        boxer1 = newBoxer('boxer-1', [], 2048, new Date().valueOf() - (1 * 1000))
+        boxer2 = newBoxer('boxer-2', [], 128, new Date().valueOf() - (2 * 1000))
+        boxerListener.boxers[boxer1.id] = boxer1
+        boxerListener.boxers[boxer2.id] = boxer2
+
+      it 'should only check the memory requirement', ->
+        availableBoxer = boxerListener.chooseBoxer(memory: 256)
+        expect(availableBoxer.id).to.eql 'boxer-1'
+
+        delete boxerListener.boxers[boxer1.id]
+        availableBoxer = boxerListener.chooseBoxer(memory: 256)
+        expect(availableBoxer).to.be.null
+
     context "when there is one boxer available (but another is not available because it doesn't have enough free memory)", ->
       boxer1 = boxer2 = null
 

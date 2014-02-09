@@ -56,6 +56,9 @@ module.exports = class BoxerListener
           log "Error -> #{err} while sending notification"
 
   # Choose a Boxer based on the given requirements.
+  # Supported requirements:
+  #   * memory - required - free memory in MB
+  #   * runtime - box runtime, e.g. 'ruby', 'golang'
   chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
     availableBoxerIds = _.shuffle(_.keys(@boxers))
@@ -75,7 +78,7 @@ module.exports = class BoxerListener
         @boxers[id] = null
       else
         if parseInt(boxer.freeMemory) > parseInt(memory)
-          if _.include(boxer.runtimes, runtime)
+          if !runtime || _.include(boxer.runtimes, runtime)
             availableBoxer = boxer
 
     availableBoxer

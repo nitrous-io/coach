@@ -105,7 +105,7 @@ module.exports = class BoxesController extends ApplicationController
 
   deleteSnapshot: ->
     attributes =
-                snapshotId: +@params.snapshotId
+                snapshotId: @params.snapshotId
                 id: @params.box.boxer_id
     this._renderResult(protocol.DeleteSnapshotMessage, this._mergeReturnVars(attributes))
 

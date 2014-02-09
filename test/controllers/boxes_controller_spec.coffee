@@ -412,7 +412,7 @@ describe 'BoxesController', ->
       assertMessage = (channel, rawMessage) ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.id).to.eql 'boxer-id'
-        expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.snapshotId).to.eql '123'
         expect(parsedMessage.type).to.eql 'aio:delete_snapshot'
         done()
 

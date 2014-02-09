@@ -55,12 +55,12 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
 
       it 'should return the only boxer available', ->
-        availableBoxer = boxerListener.chooseBoxer('ruby', 256)
+        availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby', memory: 256)
         expect(availableBoxer.id).to.eql 'boxer-1'
         expect(availableBoxer.freeMemory).to.eql 2048
         expect(availableBoxer.runtimes).to.eql ['ruby', 'php', 'python']
 
-    context 'when there is one boxer available (but another is not available because it\'s "expired")', ->
+    context "when there is one boxer available (but another is not available because it's 'expired')", ->
       boxer1 = boxer2 = null
 
       beforeEach ->
@@ -76,15 +76,15 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
-      it 'should return the boxer1 which has been updated most recently', ->
-        availableBoxer = boxerListener.chooseBoxer('ruby', 256)
+      it 'should return the boxer that has not expired', ->
+        availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby', memory: 256)
         expect(availableBoxer.id).to.eql 'boxer-1'
         expect(availableBoxer.freeMemory).to.eql 2048
         expect(availableBoxer.runtimes).to.eql ['ruby', 'php', 'python']
 
         expect(boxerListener.boxers['boxer-2']).to.be.null
 
-    context 'when there is one boxer available (but another is not available because it doesn\'t support it\'s runtime)', ->
+    context "when there is one boxer available (but another is not available because it doesn't support its runtime)", ->
       boxer1 = boxer2 = null
 
       beforeEach ->
@@ -100,13 +100,13 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
-      it 'should return the boxer1 which has been updated most recently', ->
-        availableBoxer = boxerListener.chooseBoxer('ruby', 256)
+      it 'should return the boxer that supports the required runtime', ->
+        availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby', memory: 256)
         expect(availableBoxer.id).to.eql 'boxer-2'
         expect(availableBoxer.freeMemory).to.eql 1024
         expect(availableBoxer.runtimes).to.eql ['ruby']
 
-    context 'when there is one boxer available (but another is not available because it doesn\'t have as much free memory)', ->
+    context "when there is one boxer available (but another is not available because it doesn't have enough free memory)", ->
       boxer1 = boxer2 = null
 
       beforeEach ->
@@ -122,8 +122,8 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
-      it 'should return the boxer1 which has been updated most recently', ->
-        availableBoxer = boxerListener.chooseBoxer('ruby', 256)
+      it 'should return the boxer with enough free memory required', ->
+        availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby', memory: 256)
         expect(availableBoxer.id).to.eql 'boxer-1'
         expect(availableBoxer.freeMemory).to.eql 2048
         expect(availableBoxer.runtimes).to.eql ['ruby', 'php', 'python']
@@ -145,10 +145,10 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
-      it 'should return the boxer1 which has been updated most recently', ->
+      it 'should return any one of the boxers', ->
         # Since we are randomly picking one from the eligible list,
         # we are only checking if it is picked from the list
-        availableBoxer = boxerListener.chooseBoxer('ruby', 256)
+        availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby', memory: 256)
         expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
 
 

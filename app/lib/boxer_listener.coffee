@@ -55,23 +55,27 @@ module.exports = class BoxerListener
         if err
           log "Error -> #{err} while sending notification"
 
-  chooseBoxer: (runtime, memory) ->
+  # Choose a Boxer based on the given requirements.
+  chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
     availableBoxerIds = _.shuffle(_.keys(@boxers))
-    self = this
     availableBoxer = null
+
+    memory = requirements.memory
+    runtime = requirements.runtime
 
     log "Available Boxer IDs: #{availableBoxerIds}"
 
-    _.each availableBoxerIds, (id) ->
-      boxer = self.boxers[id]
+    _.each availableBoxerIds, (id) =>
+      boxer = @boxers[id]
       log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
         log "Error: Expired Boxer: #{id}, deleting"
-        self.boxers[id] = null
-      else if (parseInt(boxer.freeMemory) > parseInt(memory) &&
-               _.include(boxer.runtimes, runtime))
-        availableBoxer = boxer
+        @boxers[id] = null
+      else
+        if parseInt(boxer.freeMemory) > parseInt(memory)
+          if _.include(boxer.runtimes, runtime)
+            availableBoxer = boxer
 
     availableBoxer

@@ -107,13 +107,19 @@ describe 'BoxerListener', ->
         boxerListener.boxers[boxer1.id] = boxer1
         boxerListener.boxers[boxer2.id] = boxer2
 
-      it 'should return any one of the boxers', ->
-        availableBoxer = boxerListener.chooseBoxer()
-        expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
+      context 'when a snapshotId is given', ->
+        it 'should return any one of the boxers', ->
+          availableBoxer = boxerListener.chooseBoxer(snapshotId: 123)
+          expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
 
-        delete boxerListener.boxers[boxer1.id]
-        availableBoxer = boxerListener.chooseBoxer()
-        expect(availableBoxer.id).to.eql 'boxer-2'
+          delete boxerListener.boxers[boxer1.id]
+          availableBoxer = boxerListener.chooseBoxer(snapshotId: 123)
+          expect(availableBoxer.id).to.eql 'boxer-2'
+
+      context 'when no snapshotId is given', ->
+        it 'should not return any boxer', ->
+          availableBoxer = boxerListener.chooseBoxer()
+          expect(availableBoxer).to.be.null
 
     context 'when there is more than one boxer available', ->
       boxer1 = boxer2 = null

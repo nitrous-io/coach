@@ -59,6 +59,7 @@ module.exports = class BoxerListener
   # Choose a Boxer based on the given requirements.
   # Supported requirements:
   #   * runtime - box runtime, e.g. 'ruby', 'golang'
+  #   * snapshotId - ID of snapshot to use to create the box
   # Any unknown requirements will be ignored.
   chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
@@ -66,6 +67,9 @@ module.exports = class BoxerListener
     availableBoxer = null
 
     runtime = requirements?.runtime
+    snapshotId = requirements?.snapshotId
+
+    runtimeIndependent = snapshotId? and not runtime?
 
     log "Available Boxer IDs: #{availableBoxerIds}"
 
@@ -77,7 +81,7 @@ module.exports = class BoxerListener
         log "Error: Expired Boxer: #{id}, deleting"
         @boxers[id] = null
       else
-        if !runtime || _.include(boxer.runtimes, runtime)
+        if runtimeIndependent || _.include(boxer.runtimes, runtime)
           availableBoxer = boxer
 
     availableBoxer

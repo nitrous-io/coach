@@ -10,8 +10,7 @@ module.exports = class BoxesController extends ApplicationController
     boxerListener = require('../../app').boxerListener
 
     boxer = boxerListener.chooseBoxer
-      runtime: @params.box.runtime,
-      memory: @params.box.memory
+      runtime: @params.box.runtime
 
     attributes =
                 name: @params.box.name

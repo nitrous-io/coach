@@ -8,7 +8,7 @@ log                 = require './log'
 class Boxer
   @EXPIRY_TIME = 10 * 1000 # 10 seconds
 
-  constructor: (@id, @runtimes, @freeMemory) ->
+  constructor: (@id, @runtimes) ->
     @lastUpdatedAt = new Date().valueOf()
 
 
@@ -36,7 +36,7 @@ module.exports = class BoxerListener
         boxer.lastUpdatedAt = now
         boxer.runtimes = message.runtimes
       else
-        @boxers[message.id] = new Boxer(message.id, message.runtimes, message.freeMemory)
+        @boxers[message.id] = new Boxer(message.id, message.runtimes)
         log "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
@@ -58,15 +58,14 @@ module.exports = class BoxerListener
 
   # Choose a Boxer based on the given requirements.
   # Supported requirements:
-  #   * memory - required - free memory in MB
   #   * runtime - box runtime, e.g. 'ruby', 'golang'
+  # Any unknown requirements will be ignored.
   chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
     availableBoxerIds = _.shuffle(_.keys(@boxers))
     availableBoxer = null
 
-    memory = requirements.memory
-    runtime = requirements.runtime
+    runtime = requirements?.runtime
 
     log "Available Boxer IDs: #{availableBoxerIds}"
 
@@ -78,8 +77,7 @@ module.exports = class BoxerListener
         log "Error: Expired Boxer: #{id}, deleting"
         @boxers[id] = null
       else
-        if parseInt(boxer.freeMemory) > parseInt(memory)
-          if !runtime || _.include(boxer.runtimes, runtime)
-            availableBoxer = boxer
+        if !runtime || _.include(boxer.runtimes, runtime)
+          availableBoxer = boxer
 
     availableBoxer

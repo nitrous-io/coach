@@ -7,6 +7,6 @@ module.exports = class SnapshotMessage extends BaseMessage
     @id = attributes.id
     @boxId = attributes.boxId
     @name = attributes.name
-    @snapshotId = attributes.snapshotId
+    @snapshotId = +attributes.snapshotId
     @data = attributes.data # Reserved for things like a list of files to be excluded.
     super

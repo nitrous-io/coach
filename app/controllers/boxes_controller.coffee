@@ -20,7 +20,7 @@ module.exports = class BoxesController extends ApplicationController
                 diskSpace: @params.box.disk_space
                 virtualMemory: @params.box.virtual_memory
                 cpuShares: @params.box.cpu_shares
-                snapshotURL: @params.box.snapshot_url
+                snapshotId: @params.box.snapshot_id
                 premium: @params.box.premium
 
     if @params.box.public_keys?

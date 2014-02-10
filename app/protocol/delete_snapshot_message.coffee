@@ -6,5 +6,5 @@ module.exports = class DeleteSnapshotMessage extends BaseMessage
   constructor: (attributes) ->
     @id = attributes.id
     @boxId = attributes.boxId
-    @snapshotId = attributes.snapshotId
+    @snapshotId = +attributes.snapshotId
     super

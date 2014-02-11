@@ -7,4 +7,5 @@ module.exports = class DeletedSnapshotMessage extends BaseMessage
     @id = attributes.id
     @boxId = attributes.boxId
     @snapshotId = attributes.snapshotId
+    @success = attributes.success
     super

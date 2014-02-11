@@ -9,4 +9,5 @@ module.exports = class SnapshottedMessage extends BaseMessage
     @name = attributes.name
     @snapshotId = attributes.snapshotId
     @snapshotUrl = attributes.snapshotUrl
+    @success = attributes.success
     super

@@ -22,6 +22,7 @@ module.exports = class BoxesController extends ApplicationController
                 virtualMemory: @params.box.virtual_memory
                 cpuShares: @params.box.cpu_shares
                 snapshotId: @params.box.snapshot_id
+                snapshotUrl: @params.box.snapshot_url
                 premium: @params.box.premium
 
     if @params.box.public_keys?
@@ -107,6 +108,7 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 snapshotId: @params.snapshotId
                 id: @params.box.boxer_id
+                snapshotUrl: @params.snapshot_url
     this._renderResult(protocol.DeleteSnapshotMessage, this._mergeReturnVars(attributes))
 
   migrate: ->

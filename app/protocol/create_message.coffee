@@ -8,6 +8,7 @@ module.exports = class CreateMessage extends BaseMessage
     @boxId = +attributes.boxId
     @runtime = attributes.runtime
     @snapshotId = +attributes.snapshotId
+    @snapshotUrl = attributes.snapshotUrl
     @memory = attributes.memory
     @virtualMemory = attributes.virtualMemory
     @diskSpace = attributes.diskSpace

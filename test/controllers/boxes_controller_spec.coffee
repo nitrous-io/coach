@@ -61,6 +61,8 @@ describe 'BoxesController', ->
           expect(parsedMessage.name).to.eql 'mclovin'
           expect(parsedMessage.boxId).to.eql 1
           expect(parsedMessage.runtime).to.eql 'ruby'
+          expect(parsedMessage.snapshotId).to.eql 123
+          expect(parsedMessage.snapshotUrl).to.eql 's3://buckets/snapshot-123.tar.gz'
           expect(parsedMessage.memory).to.eql '256'
           expect(parsedMessage.diskSpace).to.eql '2048'
           expect(parsedMessage.virtualMemory).to.eql '512'
@@ -76,6 +78,8 @@ describe 'BoxesController', ->
             'name':'mclovin',
             'id':'1',
             'runtime':'ruby',
+            'snapshot_id':'123',
+            'snapshot_url':'s3://buckets/snapshot-123.tar.gz',
             'memory':'256',
             'disk_space':'2048',
             'virtual_memory':'512',
@@ -413,6 +417,7 @@ describe 'BoxesController', ->
         parsedMessage = JSON.parse(rawMessage)
         expect(parsedMessage.id).to.eql 'boxer-id'
         expect(parsedMessage.snapshotId).to.eql 123
+        expect(parsedMessage.snapshotUrl).to.eql 's3://buckets/snapshot-123.tar.gz'
         expect(parsedMessage.type).to.eql 'aio:delete_snapshot'
         done()
 
@@ -422,7 +427,8 @@ describe 'BoxesController', ->
         put('/snapshots/123/destroy', {
           'box': {
             'boxer_id': 'boxer-id'
-          }
+          },
+          'snapshot_url': 's3://buckets/snapshot-123.tar.gz'
         }).end (err, res) ->
             assertStatus res, 'OK'
             assertCode res, 202

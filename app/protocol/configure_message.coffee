@@ -11,6 +11,7 @@ module.exports = class ConfigureMessage extends BaseMessage
     'aio:configure:change_specs': 'aio:configured:change_specs'
     'aio:configure:update_auth': 'aio:configured:update_auth'
     'aio:configure:update_premium': 'aio:configured:update_premium'
+    'aio:configure:update_custom_domain': 'aio:configured:update_custom_domain'
 
   constructor: (attributes) ->
     @id = attributes.id

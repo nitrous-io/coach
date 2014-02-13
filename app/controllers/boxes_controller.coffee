@@ -9,9 +9,9 @@ module.exports = class BoxesController extends ApplicationController
   create: ->
     boxerListener = require('../../app').boxerListener
 
-    boxer = boxerListener.chooseBoxer @params.box.runtime,
-                                      @params.box.memory,
-                                      @params.box.disk_space
+    boxer = boxerListener.chooseBoxer
+      runtime: @params.box.runtime
+      snapshotId: @params.box.snapshot_id
 
     attributes =
                 name: @params.box.name
@@ -21,7 +21,8 @@ module.exports = class BoxesController extends ApplicationController
                 diskSpace: @params.box.disk_space
                 virtualMemory: @params.box.virtual_memory
                 cpuShares: @params.box.cpu_shares
-                snapshotURL: @params.box.snapshot_url
+                snapshotId: @params.box.snapshot_id
+                snapshotUrl: @params.box.snapshot_url
                 premium: @params.box.premium
 
     if @params.box.public_keys?
@@ -95,6 +96,20 @@ module.exports = class BoxesController extends ApplicationController
         attributes.data = @params.box.data
 
     this._renderResult(protocol.ConfigureMessage, this._mergeReturnVars(attributes))
+
+  snapshot: ->
+    attributes =
+                name: @params.name
+                id: @params.box.boxer_id
+                snapshotId: @params.box.snapshot_id
+    this._renderResult(protocol.SnapshotMessage, this._mergeReturnVars(attributes))
+
+  deleteSnapshot: ->
+    attributes =
+                snapshotId: @params.snapshotId
+                id: @params.box.boxer_id
+                snapshotUrl: @params.snapshot_url
+    this._renderResult(protocol.DeleteSnapshotMessage, this._mergeReturnVars(attributes))
 
   migrate: ->
     attributes =

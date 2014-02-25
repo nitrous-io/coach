@@ -8,9 +8,15 @@ log                 = require './log'
 class Boxer
   @EXPIRY_TIME = 10 * 1000 # 10 seconds
 
-  constructor: (@id, @runtimes) ->
-    @lastUpdatedAt = new Date().valueOf()
+  constructor: (attributes) ->
+    @updateAttributes(attributes)
 
+  updateAttributes: (attributes) ->
+    @lastUpdatedAt = new Date().valueOf()
+    @id = attributes.id
+    @runtimes = attributes.runtimes
+    @cpus = attributes.cpus
+    @boxStats = attributes.boxStats
 
 module.exports = class BoxerListener
   constructor: (@settings) ->
@@ -33,11 +39,11 @@ module.exports = class BoxerListener
 
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        boxer.lastUpdatedAt = now
-        boxer.runtimes = message.runtimes
+        boxer.updateAttributes(message)
       else
-        @boxers[message.id] = new Boxer(message.id, message.runtimes)
-        log "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
+        @boxers[message.id] = new Boxer(message)
+        log "Registered a new boxer: #{message.id}", message
+        log "Number of boxers in my purview: #{_.keys(@boxers).length}"
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||

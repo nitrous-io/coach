@@ -69,7 +69,7 @@ module.exports = class BoxerListener
   # Any unknown requirements will be ignored.
   chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
-    availableBoxerIds = _.shuffle(_.keys(@boxers))
+    availableBoxers = this._weightedBoxers()
     availableBoxer = null
 
     runtime = requirements?.runtime
@@ -77,17 +77,45 @@ module.exports = class BoxerListener
 
     runtimeIndependent = snapshotId? and not runtime?
 
-    log "Available Boxer IDs: #{availableBoxerIds}"
+    log "Available Boxer IDs: #{_.map(availableBoxers, (v) -> v.id)}"
 
-    _.each availableBoxerIds, (id) =>
-      boxer = @boxers[id]
-      log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
+    _.each availableBoxers, (boxer) =>
+      log "Boxer '#{boxer.id}': Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
-        log "Error: Expired Boxer: #{id}, deleting"
-        @boxers[id] = null
+        log "Error: Expired Boxer: #{boxer.id}, deleting"
+        @boxers[boxer.id] = null
       else
         if runtimeIndependent || _.include(boxer.runtimes, runtime)
           availableBoxer = boxer
 
     availableBoxer
+
+  _weightedBoxers: ->
+    boxers = this.scoreBoxers(@boxers)
+    boxers = this.sortByScore(boxers)
+
+    log "Weighted boxers: #{_.map(boxers, (v) -> "#{v.boxer.id}(score: #{v.score})" )}"
+
+    _.map(boxers, (v) -> v.boxer)
+
+  # Takes a list of boxers and returns a list of
+  # { boxer: boxer, score: score } after scoring each boxer.
+  # We don't apply any randomness here so that we can test this reliably.
+  # Callers can apply randomness to the scores as necessary.
+  scoreBoxers: (boxers) ->
+    if _.every(boxers, (boxer) -> boxer.boxStats?.running?)
+      totalRunningBoxes = _.reduce(
+        boxers
+        (memo, boxer) -> memo + boxer.boxStats.running
+        0)
+
+    _.map boxers, (boxer) ->
+      score = 0
+      if totalRunningBoxes? and totalRunningBoxes != 0
+        score += (totalRunningBoxes - boxer.boxStats.running) / totalRunningBoxes
+      { boxer: boxer, score: score }
+
+  # Sort a list of items by "score", with the highest score in front.
+  sortByScore: (list) ->
+    _.sortBy(list, (item) -> -item.score)

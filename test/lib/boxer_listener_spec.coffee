@@ -142,5 +142,60 @@ describe 'BoxerListener', ->
         availableBoxer = boxerListener.chooseBoxer(runtime: 'ruby')
         expect(_.include(boxerListener.boxers, availableBoxer)).to.be.true
 
+    describe '#scoreBoxers', ->
+      context 'when all boxers have a "running boxes" statistic', ->
+        boxer1 = boxer2 = boxer3 = boxers = null
 
+        beforeEach ->
+          boxer1 = newBoxer('boxer-1',
+                            ['ruby'],
+                            new Date().valueOf() - (1 * 1000),
+                            { running: 50 })
+          boxer2 = newBoxer('boxer-2',
+                            ['ruby'],
+                            new Date().valueOf() - (2 * 1000),
+                            { running: 20 })
+          boxer3 = newBoxer('boxer-3',
+                            ['ruby'],
+                            new Date().valueOf() - (3 * 1000),
+                            { running: 30 })
+          boxers = [boxer1, boxer2, boxer3]
 
+        it 'should return a list of objects with the respective boxers and an expected score', ->
+          result = boxerListener.scoreBoxers(boxers)
+
+          expect(result[0].boxer).to.eql boxer1
+          expect(result[0].score).to.eql 0.5 # Score is computed by: (total running - boxer running) / total running.
+          expect(result[1].boxer).to.eql boxer2
+          expect(result[1].score).to.eql 0.8
+          expect(result[2].boxer).to.eql boxer3
+          expect(result[2].score).to.eql 0.7
+
+      context 'when not all boxes have a "running boxes" statistic', ->
+        boxer1 = boxer2 = boxers = null
+
+        beforeEach ->
+          boxer1 = newBoxer('boxer-1',
+                            ['ruby'],
+                            new Date().valueOf() - (1 * 1000),
+                            { running: 50 })
+          boxer2 = newBoxer('boxer-2',
+                            ['ruby'],
+                            new Date().valueOf() - (2 * 1000),
+                            {})
+          boxers = [boxer1, boxer2]
+
+        it 'should return a list of objects with the respective boxers and a score of 0', ->
+          result = boxerListener.scoreBoxers(boxers)
+
+          expect(result[0].boxer).to.eql boxer1
+          expect(result[0].score).to.eql 0
+          expect(result[1].boxer).to.eql boxer2
+          expect(result[1].score).to.eql 0
+
+    describe '#sortByScore', ->
+      it 'should sort a list by score, with the item with the highest score in front', ->
+        item1 = { score: 5 }
+        item2 = { score: 1 }
+        item3 = { score: 10 }
+        expect(boxerListener.sortByScore([item1, item2, item3])).to.eql [item3, item1, item2]

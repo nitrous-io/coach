@@ -79,13 +79,14 @@ module.exports = class BoxerListener
 
     log "Available Boxer IDs: #{_.map(availableBoxers, (v) -> v.id)}"
 
-    _.each availableBoxers, (boxer) =>
+    for boxer in availableBoxers
       log "Boxer '#{boxer.id}': Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
         log "Error: Expired Boxer: #{boxer.id}, deleting"
         @boxers[boxer.id] = null
-      else
+
+      if !availableBoxer?
         if runtimeIndependent || _.include(boxer.runtimes, runtime)
           availableBoxer = boxer
 

@@ -93,6 +93,8 @@ module.exports = class BoxerListener
 
   _weightedBoxers: ->
     boxers = this.scoreBoxers(@boxers)
+    _.each boxers, (boxer) ->
+      boxer.score = boxer.score + Math.random() # Introduce some randomness.
     boxers = this.sortByScore(boxers)
 
     log "Weighted boxers: #{_.map(boxers, (v) -> "#{v.boxer.id}(score: #{v.score})" )}"

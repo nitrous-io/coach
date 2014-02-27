@@ -85,15 +85,15 @@ module.exports = class BoxerListener
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
         log "Error: Expired Boxer: #{boxer.id}, deleting"
         @boxers[boxer.id] = null
-
-      if !availableBoxer?
-        if runtimeIndependent || _.include(boxer.runtimes, runtime)
-          availableBoxer = boxer
+      else
+        if !availableBoxer?
+          if runtimeIndependent || _.include(boxer.runtimes, runtime)
+            availableBoxer = boxer
 
     availableBoxer
 
   _weightedBoxers: ->
-    boxers = this.scoreBoxers(@boxers)
+    boxers = this.scoreBoxers(_.clone @boxers)
     _.each boxers, (boxer) ->
       boxer.score = boxer.score + Math.random() # Introduce some randomness.
     boxers = this.sortByScore(boxers)

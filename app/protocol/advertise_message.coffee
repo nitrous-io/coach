@@ -11,7 +11,9 @@ module.exports = class AdvertiseMessage extends BaseMessage
     return new AdvertiseMessage(id: settings.id, runtimes: runtimes, freeMemory: os.freemem())
 
   constructor: (attributes) ->
-    @freeMemory = attributes.freeMemory
-    @runtimes = attributes.runtimes
     @id = attributes.id
+    @runtimes = attributes.runtimes
+    @freeMemory = attributes.freeMemory
+    @cpus = attributes.cpus
+    @boxStats = attributes.boxStats
     super

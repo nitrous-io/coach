@@ -8,9 +8,15 @@ log                 = require './log'
 class Boxer
   @EXPIRY_TIME = 10 * 1000 # 10 seconds
 
-  constructor: (@id, @runtimes) ->
-    @lastUpdatedAt = new Date().valueOf()
+  constructor: (attributes) ->
+    @updateAttributes(attributes)
 
+  updateAttributes: (attributes) ->
+    @lastUpdatedAt = new Date().valueOf()
+    @id = attributes.id
+    @runtimes = attributes.runtimes
+    @cpus = attributes.cpus
+    @boxStats = attributes.boxStats
 
 module.exports = class BoxerListener
   constructor: (@settings) ->
@@ -33,11 +39,11 @@ module.exports = class BoxerListener
 
       # add the boxer to the list of boxers who report to the coach
       if (boxer = @boxers[message.id])?
-        boxer.lastUpdatedAt = now
-        boxer.runtimes = message.runtimes
+        boxer.updateAttributes(message)
       else
-        @boxers[message.id] = new Boxer(message.id, message.runtimes)
-        log "Received a boxer update: #{message.id}, number of boxers in my purview: #{_.keys(@boxers).length}"
+        @boxers[message.id] = new Boxer(message)
+        log "Registered a new boxer: #{message.id}", message
+        log "Number of boxers in my purview: #{_.keys(@boxers).length}"
     else if message.type == protocol.CreatedMessage.type ||
             message.type == protocol.StartedMessage.type ||
             message.type == protocol.StoppedMessage.type ||
@@ -63,7 +69,7 @@ module.exports = class BoxerListener
   # Any unknown requirements will be ignored.
   chooseBoxer: (requirements) ->
     # Randomize the available boxer (if there is more than one available)
-    availableBoxerIds = _.shuffle(_.keys(@boxers))
+    availableBoxers = this._weightedBoxers()
     availableBoxer = null
 
     runtime = requirements?.runtime
@@ -71,17 +77,48 @@ module.exports = class BoxerListener
 
     runtimeIndependent = snapshotId? and not runtime?
 
-    log "Available Boxer IDs: #{availableBoxerIds}"
+    log "Available Boxer IDs: #{_.map(availableBoxers, (v) -> v.id)}"
 
-    _.each availableBoxerIds, (id) =>
-      boxer = @boxers[id]
-      log "Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
+    for boxer in availableBoxers
+      log "Boxer '#{boxer.id}': Value Of Updated At --> #{new Date().valueOf() - boxer.lastUpdatedAt}"
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
-        log "Error: Expired Boxer: #{id}, deleting"
-        @boxers[id] = null
-      else
+        log "Error: Expired Boxer: #{boxer.id}, deleting"
+        @boxers[boxer.id] = null
+
+      if !availableBoxer?
         if runtimeIndependent || _.include(boxer.runtimes, runtime)
           availableBoxer = boxer
 
     availableBoxer
+
+  _weightedBoxers: ->
+    boxers = this.scoreBoxers(@boxers)
+    _.each boxers, (boxer) ->
+      boxer.score = boxer.score + Math.random() # Introduce some randomness.
+    boxers = this.sortByScore(boxers)
+
+    log "Weighted boxers: #{_.map(boxers, (v) -> "#{v.boxer.id}(score: #{v.score})" )}"
+
+    _.map(boxers, (v) -> v.boxer)
+
+  # Takes a list of boxers and returns a list of
+  # { boxer: boxer, score: score } after scoring each boxer.
+  # We don't apply any randomness here so that we can test this reliably.
+  # Callers can apply randomness to the scores as necessary.
+  scoreBoxers: (boxers) ->
+    if _.every(boxers, (boxer) -> boxer.boxStats?.running?)
+      totalRunningBoxes = _.reduce(
+        boxers
+        (memo, boxer) -> memo + boxer.boxStats.running
+        0)
+
+    _.map boxers, (boxer) ->
+      score = 0
+      if totalRunningBoxes? and totalRunningBoxes != 0
+        score += (totalRunningBoxes - boxer.boxStats.running) / totalRunningBoxes
+      { boxer: boxer, score: score }
+
+  # Sort a list of items by "score", with the highest score in front.
+  sortByScore: (list) ->
+    _.sortBy(list, (item) -> -item.score)

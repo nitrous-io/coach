@@ -84,7 +84,7 @@ module.exports = class BoxerListener
 
       if new Date().valueOf() - boxer.lastUpdatedAt >= Boxer.EXPIRY_TIME
         log "Error: Expired Boxer: #{boxer.id}, deleting"
-        @boxers[boxer.id] = null
+        delete @boxers[boxer.id]
       else
         if !availableBoxer?
           if runtimeIndependent || _.include(boxer.runtimes, runtime)

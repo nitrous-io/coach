@@ -77,7 +77,7 @@ describe 'BoxerListener', ->
         expect(availableBoxer.id).to.eql 'boxer-1'
         expect(availableBoxer.runtimes).to.eql ['ruby', 'php', 'python']
 
-        expect(boxerListener.boxers['boxer-2']).to.be.null
+        expect(boxerListener.boxers['boxer-2']).to.be.undefined
 
     context "when there is one boxer available (but another is not available because it doesn't support its runtime)", ->
       boxer1 = boxer2 = null

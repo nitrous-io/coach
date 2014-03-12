@@ -296,24 +296,24 @@ describe 'BoxesController', ->
 
     context 'update custom domain', ->
       it 'responds with 202', (done) ->
-	assertMessage = (channel, rawMessage) ->
-	  parsedMessage = JSON.parse(rawMessage)
-	  expect(parsedMessage.name).to.eql 'mclovin'
-	  expect(parsedMessage.id).to.eql 'boxer-id'
-	  expect(parsedMessage.type).to.eql 'aio:configure'
-	  expect(parsedMessage.dataType).to.eql 'aio:configure:update_custom_domain'
-	  expect(parsedMessage.data).to.eql {'custom_domain': 'wtf.com'}
-	  done()
+        assertMessage = (channel, rawMessage) ->
+          parsedMessage = JSON.parse(rawMessage)
+          expect(parsedMessage.name).to.eql 'mclovin'
+          expect(parsedMessage.id).to.eql 'boxer-id'
+          expect(parsedMessage.type).to.eql 'aio:configure'
+          expect(parsedMessage.dataType).to.eql 'aio:configure:update_custom_domain'
+          expect(parsedMessage.data).to.eql {'custom_domain': 'wtf.com'}
+          done()
 
-	subscribeAndDo ->
-	  boxer.on 'message', assertMessage
-	  put('/boxes/mclovin', {'box': {
-	    'boxer_id':'boxer-id',
-	    'data_type': 'aio:configure:update_custom_domain',
-	    'data': JSON.stringify({'custom_domain': 'wtf.com'})}})
-	    .end (err, res) ->
-	      assertStatus res, "OK"
-	      assertCode res, 202
+        subscribeAndDo ->
+          boxer.on 'message', assertMessage
+          put('/boxes/mclovin', {'box': {
+            'boxer_id':'boxer-id',
+            'data_type': 'aio:configure:update_custom_domain',
+            'data': JSON.stringify({'custom_domain': 'wtf.com'})}})
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
 
   describe 'PUT stop', ->
     beforeEach (done) ->

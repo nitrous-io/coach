@@ -315,6 +315,27 @@ describe 'BoxesController', ->
               assertStatus res, "OK"
               assertCode res, 202
 
+    context 'update sudo', ->
+      it 'responds with 202', (done) ->
+        assertMessage = (channel, rawMessage) ->
+          parsedMessage = JSON.parse(rawMessage)
+          expect(parsedMessage.name).to.eql 'mclovin'
+          expect(parsedMessage.id).to.eql 'boxer-id'
+          expect(parsedMessage.type).to.eql 'aio:configure'
+          expect(parsedMessage.dataType).to.eql 'aio:configure:update_sudo'
+          expect(parsedMessage.data).to.eql {'sudo': true}
+          done()
+
+        subscribeAndDo ->
+          boxer.on 'message', assertMessage
+          put('/boxes/mclovin', {'box': {
+            'boxer_id':'boxer-id',
+            'data_type': 'aio:configure:update_sudo',
+            'data': JSON.stringify({'sudo': true})}})
+            .end (err, res) ->
+              assertStatus res, "OK"
+              assertCode res, 202
+
   describe 'PUT stop', ->
     beforeEach (done) ->
       boxer.subscribe settings.boxerChannel, (err, result) ->

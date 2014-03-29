@@ -474,3 +474,31 @@ describe 'BoxesController', ->
           .end (err, res) ->
             assertStatus res, "OK"
             assertCode res, 202
+
+  describe 'PUT clone_repository', ->
+    beforeEach (done) ->
+      boxer.subscribe settings.boxerChannel, (err, result) ->
+        done() if !err
+
+    it 'responds with 202', (done) ->
+      assertMessage = (channel, rawMessage) ->
+        parsedMessage = JSON.parse(rawMessage)
+        expect(parsedMessage.id).to.eql 'boxer-id'
+        expect(parsedMessage.name).to.eql 'mclovin'
+        expect(parsedMessage.repositoryUrl).to.eql 'https://github.com/nitrous-io/autoparts'
+        expect(parsedMessage.repositoryScm).to.eql 'git'
+        expect(parsedMessage.type).to.eql 'aio:clone_repository'
+        done()
+
+      subscribeAndDo ->
+        boxer.on 'message', assertMessage
+
+        put('/boxes/mclovin/clone_repo', {
+          'box': {
+            'boxer_id': 'boxer-id',
+            'repository_url': 'https://github.com/nitrous-io/autoparts'
+            'repository_scm': 'git'
+          },
+        }).end (err, res) ->
+            assertStatus res, 'OK'
+            assertCode res, 202

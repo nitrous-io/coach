@@ -23,6 +23,8 @@ module.exports = class BoxesController extends ApplicationController
                 cpuShares: @params.box.cpu_shares
                 snapshotId: @params.box.snapshot_id
                 snapshotUrl: @params.box.snapshot_url
+                repositoryUrl: @params.box.repository_url
+                repositoryScm: @params.box.repository_scm
                 premium: @params.box.premium
 
     if @params.box.public_keys?
@@ -122,6 +124,14 @@ module.exports = class BoxesController extends ApplicationController
                 id: @params.box.boxer_id
                 boxId: @params.box.id
     this._renderResult(protocol.MigrateMessage, attributes)
+
+  cloneRepo: ->
+    attributes =
+                name: @params.name
+                id: @params.box.boxer_id
+                repositoryUrl: @params.box.repository_url
+                repositoryScm: @params.box.repository_scm
+    this._renderResult(protocol.CloneRepositoryMessage, attributes)
 
   _renderResult: (klass, attributes) ->
     message = new klass(attributes)

@@ -95,6 +95,7 @@ module.exports = class BoxesController extends ApplicationController
       , 'aio:configure:update_auth'
       , 'aio:configure:update_premium'
       , 'aio:configure:update_custom_domain'
+      , 'aio:configure:update_sudo'
         try
           attributes.data = JSON.parse @params.box.data
         catch error

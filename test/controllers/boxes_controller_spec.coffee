@@ -183,50 +183,6 @@ describe 'BoxesController', ->
               assertStatus res, "OK"
               assertCode res, 202
 
-    context 'setting env variables', ->
-      it 'responds with 202', (done) ->
-        assertMessage = (channel, rawMessage) ->
-          parsedMessage = JSON.parse(rawMessage)
-          expect(parsedMessage.name).to.eql 'mclovin'
-          expect(parsedMessage.id).to.eql 'boxer-id'
-          expect(parsedMessage.type).to.eql 'aio:configure'
-          expect(parsedMessage.dataType).to.eql 'aio:configure:set_env_variables'
-          expect(parsedMessage.data).to.eql {'env1': '123', 'env2': '234'}
-          expect(parsedMessage.returnVars).to.eql {'addon_id':1}
-          done()
-
-        subscribeAndDo ->
-          boxer.on 'message', assertMessage
-          put('/boxes/mclovin', {'box': {
-            'boxer_id':'boxer-id',
-            'data_type': 'aio:configure:set_env_variables',
-            'data': JSON.stringify({'env1': '123', 'env2': '234'})}, 'return_vars': JSON.stringify({'addon_id':1})})
-            .end (err, res) ->
-              assertStatus res, "OK"
-              assertCode res, 202
-
-    context 'removing env variables', ->
-      it 'responds with 202', (done) ->
-        assertMessage = (channel, rawMessage) ->
-          parsedMessage = JSON.parse(rawMessage)
-          expect(parsedMessage.name).to.eql 'mclovin'
-          expect(parsedMessage.id).to.eql 'boxer-id'
-          expect(parsedMessage.type).to.eql 'aio:configure'
-          expect(parsedMessage.dataType).to.eql 'aio:configure:remove_env_variables'
-          expect(parsedMessage.data).to.eql ['env1', 'env2']
-          expect(parsedMessage.returnVars).to.eql {'addon_id':1}
-          done()
-
-        subscribeAndDo ->
-          boxer.on 'message', assertMessage
-          put('/boxes/mclovin', {'box': {
-            'boxer_id':'boxer-id',
-            'data_type': 'aio:configure:remove_env_variables',
-            'data': JSON.stringify(['env1', 'env2'])}, 'return_vars': JSON.stringify({'addon_id':1})})
-            .end (err, res) ->
-              assertStatus res, "OK"
-              assertCode res, 202
-
     context 'changing box specs', ->
       it 'responds with 202', (done) ->
         assertMessage = (channel, rawMessage) ->

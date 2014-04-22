@@ -89,9 +89,7 @@ module.exports = class BoxesController extends ApplicationController
                 dataType: @params.box.data_type
 
     switch attributes.dataType
-      when 'aio:configure:remove_env_variables'
-      , 'aio:configure:set_env_variables'
-      , 'aio:configure:change_specs'
+      when 'aio:configure:change_specs'
       , 'aio:configure:update_auth'
       , 'aio:configure:update_premium'
       , 'aio:configure:update_custom_domain'

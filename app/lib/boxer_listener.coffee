@@ -33,6 +33,7 @@ module.exports = class BoxerListener
           self._handle(parsedMessage)
 
   _handle: (message) ->
+    startTime = Date.now()
 
     if message.type == protocol.AdvertiseMessage.type
       now = new Date().valueOf()
@@ -62,6 +63,7 @@ module.exports = class BoxerListener
       ActionWebhook.sendNotification message, (err) ->
         if err
           log "Error -> #{err} while sending notification"
+        log "#{message.type}: #{(Date.now() - startTime) / 1000.0}"
 
   # Choose a Boxer based on the given requirements.
   # Supported requirements:

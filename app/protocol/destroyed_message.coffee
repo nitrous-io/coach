@@ -6,4 +6,8 @@ module.exports = class DestroyedMessage extends BaseMessage
   constructor: (attributes) ->
     @id = attributes.id
     @boxId = attributes.boxId
+    @snapshotId = attributes.snapshotId
+    @snapshotUrl = attributes.snapshotUrl
+    @snapshotSize = attributes.snapshotSize
+    @success = attributes.success
     super

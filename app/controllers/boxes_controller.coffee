@@ -80,6 +80,7 @@ module.exports = class BoxesController extends ApplicationController
     attributes =
                 name: @params.name
                 id: @params.box.boxer_id
+                snapshot_id: @params.box.snapshot_id
     this._renderResult(protocol.DestroyMessage, this._mergeReturnVars(attributes))
 
   update: ->

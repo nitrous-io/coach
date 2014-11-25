@@ -21,9 +21,3 @@ RUN useradd -U -m $COACH_USERNAME
 WORKDIR /home/app_runner
 
 ADD ./ ${HOME}/coach
-
-RUN cd ${HOME}/coach && git submodule init && git submodule update
-RUN cd ${HOME}/coach && npm install
-
-# Get rid of color in mocha for CI
-RUN echo "--no-colors" >> ${HOME}/coach/test/mocha.opts

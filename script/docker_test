@@ -6,5 +6,9 @@ SCRIPTPATH=$(dirname $SCRIPT)
 
 /etc/init.d/redis-server start
 
-cd $SCRIPTPATH/.. && cp .env-example .env
-cd $SCRIPTPATH/.. && make test
+cd $SCRIPTPATH/..
+git submodule init && git submodule update
+npm install
+echo "--no-colors" >> ${HOME}/coach/test/mocha.opts
+cp .env-example .env
+make test

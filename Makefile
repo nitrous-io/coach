@@ -7,5 +7,5 @@ image:
 .PHONY: image
 
 ci-test: image
-	@docker run nitrousio/coach /home/app_runner/coach/script/docker_test
+	@./script/ci
 .PHONY: ci-test

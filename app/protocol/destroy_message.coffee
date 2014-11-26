@@ -7,4 +7,5 @@ module.exports = class DestroyMessage extends BaseMessage
     @id = attributes.id
     @boxId = attributes.boxId
     @name = attributes.name
+    @snapshotId = +attributes.snapshot_id
     super

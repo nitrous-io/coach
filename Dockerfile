@@ -5,9 +5,9 @@ ENV COACH_USERNAME app_runner
 ENV HOME /home/${COACH_USERNAME}
 
 # use ec2 server because it's more stable
-RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise main restricted universe multiverse > /etc/apt/sources.list
-RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse >> /etc/apt/sources.list
-RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse >> /etc/apt/sources.list
+RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise main restricted universe multiverse > /etc/apt/sources.list && \
+        echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse >> /etc/apt/sources.list && \
+        echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse >> /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -yy build-essential libpq-dev ntp curl git-core wget tar autoconf python-setuptools redis-server python-software-properties
 

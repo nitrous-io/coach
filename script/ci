@@ -1,0 +1,5 @@
+#!/bin/bash
+
+docker run \
+        -v $HOME/.ssh/github_rsa:/root/.ssh/id_rsa \
+        nitrousio/coach /home/app_runner/coach/script/docker_test
